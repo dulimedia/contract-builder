@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nucor 2026 - Contract Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -23,117 +26,208 @@
         }
     </script>
     <style>
-        .contract-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        .service-row {
+        
+        body {
+            background: #fafafa;
+            color: #1a1a1a;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .service-card:hover {
+            border-color: #00A651;
+            box-shadow: 0 4px 12px rgba(0, 166, 81, 0.1);
+        }
+
+        .frequency-option {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            background: #f9fafb;
+            padding: 16px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
         }
-        .control-group {
+
+        .frequency-option:hover {
+            border-color: #00A651;
+            background: #f8fff9;
+        }
+
+        .frequency-option.selected {
+            border-color: #00A651;
+            background: #f0fff4;
+        }
+
+        .frequency-option input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #00A651;
+        }
+
+        .quantity-control {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 12px;
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
         }
-        .number-input {
-            width: 80px;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            text-align: center;
-        }
-        .dropdown {
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            min-width: 120px;
-        }
-        .btn-primary {
-            background-color: #00A651;
-            color: white;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-primary:hover {
-            background-color: #007A3D;
-        }
-        .btn-secondary {
-            background-color: #f3f4f6;
-            color: #374151;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-secondary:hover {
-            background-color: #e5e7eb;
-        }
-        .info-popup {
-            position: absolute;
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            padding: 1rem;
-            z-index: 10;
-            max-width: 400px;
-            font-size: 0.875rem;
-        }
-        .pricing-summary {
-            position: sticky;
-            top: 2rem;
-            background: linear-gradient(135deg, #00A651, #007A3D);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-        .icon {
-            width: 1rem;
-            height: 1rem;
-            display: inline-block;
-        }
-        .icon-lg {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-        .counter-btn {
+
+        .quantity-btn {
             width: 32px;
             height: 32px;
             border: 1px solid #d1d5db;
             background: white;
-            border-radius: 0.25rem;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-weight: 600;
             color: #374151;
+            transition: all 0.2s ease;
         }
-        .counter-btn:hover {
-            background: #f3f4f6;
+
+        .quantity-btn:hover:not(:disabled) {
+            background: #00A651;
             border-color: #00A651;
+            color: white;
         }
-        .counter-btn:disabled {
-            opacity: 0.5;
+
+        .quantity-btn:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 16px;
+        }
+
+        .pricing-sidebar {
+            position: sticky;
+            top: 24px;
+            background: linear-gradient(145deg, #00A651, #007A3D);
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 166, 81, 0.3);
+        }
+
+        .tab-nav {
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 32px;
+        }
+
+        .tab-button {
+            padding: 16px 24px;
+            border: none;
+            background: none;
+            color: #6b7280;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 32px;
+        }
+
+        .tab-button.active {
+            color: #00A651;
+            border-bottom-color: #00A651;
+        }
+
+        .tab-button:hover {
+            color: #374151;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #00A651;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .service-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .service-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+            margin-bottom: 0;
+        }
+
+        .price-display {
+            font-weight: 600;
+            color: #00A651;
         }
     </style>
 </head>
@@ -270,7 +364,8 @@
                 cinematicQuality: 'ai-enhanced',
                 demoVideos: 1,
                 verticalVideos: 2,
-                highResStills: 0
+                highResStills: 0,
+                includeModeling: false  // Default to false since client will send models
             });
             const [showInfo, setShowInfo] = useState({});
             const [activePopup, setActivePopup] = useState(null);
@@ -290,6 +385,12 @@
                 let individualTotal = 0;
                 let breakdown = [];
 
+                // Modeling Add-on (applies to all services that need modeling)
+                const modelingCost = contract.includeModeling ? {
+                    retainer: 2500,  // Additional monthly cost for modeling
+                    individual: 4000  // Additional individual cost for modeling
+                } : { retainer: 0, individual: 0 };
+
                 // Cinematic Videos
                 if (contract.cinematicFrequency !== 'none') {
                     const cinematicService = SERVICES.cinematicVideo;
@@ -297,10 +398,14 @@
                     const isNative4k = contract.cinematicQuality === 'native-4k';
                     const monthlyRate = frequency.monthlyRate;
                     
-                    const individualPrice = isNative4k ? cinematicService.pricing.native4k : cinematicService.pricing.base;
-                    const retainerPrice = isNative4k ? 
+                    let baseIndividualPrice = isNative4k ? cinematicService.pricing.native4k : cinematicService.pricing.base;
+                    let baseRetainerPrice = isNative4k ? 
                         cinematicService.pricing.retainer + 1500 : 
                         cinematicService.pricing.retainer;
+
+                    // Add modeling costs if enabled
+                    const individualPrice = baseIndividualPrice + (modelingCost.individual * monthlyRate);
+                    const retainerPrice = baseRetainerPrice + (modelingCost.retainer * monthlyRate);
                     
                     const monthlyRetainerCost = retainerPrice * monthlyRate;
                     const monthlyIndividualCost = individualPrice * monthlyRate;
@@ -308,8 +413,12 @@
                     monthlyTotal += monthlyRetainerCost;
                     individualTotal += monthlyIndividualCost;
                     
+                    const serviceName = contract.includeModeling 
+                        ? `Premium Cinematic with Modeling (${isNative4k ? 'Native 4K' : 'AI-Enhanced 4K'})`
+                        : `Premium Cinematic (${isNative4k ? 'Native 4K' : 'AI-Enhanced 4K'})`;
+
                     breakdown.push({
-                        service: `Premium Cinematic (${isNative4k ? 'Native 4K' : 'AI-Enhanced 4K'})`,
+                        service: serviceName,
                         frequency: frequency.label,
                         monthlyRetainer: monthlyRetainerCost,
                         monthlyIndividual: monthlyIndividualCost,
@@ -502,31 +611,25 @@
                         </div>
 
                         {/* Tab Navigation */}
-                        <div className="mb-8">
-                            <div className="border-b border-gray-200">
-                                <nav className="-mb-px flex space-x-8">
-                                    <button
-                                        onClick={() => setActiveTab('services')}
-                                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                                            activeTab === 'services'
-                                                ? 'border-nucor-green text-nucor-green'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }`}
-                                    >
-                                        Configure Services
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('summary')}
-                                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                                            activeTab === 'summary'
-                                                ? 'border-nucor-green text-nucor-green'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }`}
-                                    >
-                                        Production Summary
-                                    </button>
-                                </nav>
-                            </div>
+                        <div className="tab-nav">
+                            <button
+                                onClick={() => setActiveTab('services')}
+                                className={`tab-button ${activeTab === 'services' ? 'active' : ''}`}
+                            >
+                                Services
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('pricing')}
+                                className={`tab-button ${activeTab === 'pricing' ? 'active' : ''}`}
+                            >
+                                Pricing
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('summary')}
+                                className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
+                            >
+                                Summary
+                            </button>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -536,139 +639,177 @@
                                 {activeTab === 'services' && (
                                     <div className="space-y-6">
                                 
+                                {/* Modeling Toggle */}
+                                <div className="service-card">
+                                    <div className="service-header">
+                                        <div>
+                                            <h3 className="service-title">3D Modeling Services</h3>
+                                            <p className="service-subtitle">Add professional 3D modeling to your package</p>
+                                        </div>
+                                        <label className="switch">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={contract.includeModeling}
+                                                onChange={(e) => updateContract('includeModeling', e.target.checked)}
+                                            />
+                                            <span className="slider"></span>
+                                        </label>
+                                    </div>
+                                    {contract.includeModeling && (
+                                        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                            <p className="text-sm text-green-800">
+                                                <strong>Modeling services enabled:</strong> +$2,500/month retainer (+$4,000 individual pricing)
+                                            </p>
+                                            <p className="text-xs text-green-600 mt-1">
+                                                Includes precision 3D modeling, CAD optimization, and model refinement services.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Premium Cinematic Videos */}
-                                <div className="contract-section">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-semibold text-gray-900">
-                                            🎬 Premium Cinematic Videos
-                                        </h3>
-                                        <button
-                                            onClick={() => setActivePopup(activePopup === 'cinematic' ? null : 'cinematic')}
-                                            className="text-nucor-green hover:text-nucor-darkgreen"
-                                        >
-                                            <InfoIcon />
-                                        </button>
+                                <div className="service-card">
+                                    <div className="service-header">
+                                        <div>
+                                            <h3 className="service-title">Premium Cinematic Videos</h3>
+                                            <p className="service-subtitle">3-minute AI-Enhanced 4K cinematic showcases</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <h4 className="font-medium text-gray-900 mb-4">Frequency</h4>
+                                        {SERVICES.cinematicVideo.frequencies.map(freq => {
+                                            const frequency = SERVICES.cinematicVideo.frequencies.find(f => f.value === freq.value);
+                                            const isNative4k = contract.cinematicQuality === 'native-4k';
+                                            const monthlyRate = frequency.monthlyRate;
+                                            
+                                            let basePrice = isNative4k ? 
+                                                SERVICES.cinematicVideo.pricing.retainer + 1500 : 
+                                                SERVICES.cinematicVideo.pricing.retainer;
+
+                                            // Add modeling cost if enabled
+                                            if (contract.includeModeling) {
+                                                basePrice += 2500;
+                                            }
+
+                                            const monthlyPrice = basePrice * monthlyRate;
+
+                                            return (
+                                                <div 
+                                                    key={freq.value}
+                                                    className={`frequency-option ${contract.cinematicFrequency === freq.value ? 'selected' : ''}`}
+                                                    onClick={() => updateContract('cinematicFrequency', freq.value)}
+                                                >
+                                                    <div className="flex items-center">
+                                                        <input 
+                                                            type="radio" 
+                                                            checked={contract.cinematicFrequency === freq.value}
+                                                            onChange={() => {}}
+                                                        />
+                                                        <div>
+                                                            <div className="font-medium">{freq.label}</div>
+                                                            <div className="text-sm text-gray-500">
+                                                                {freq.value === 'none' ? 'No cinematic videos' : `${freq.label} showcase videos`}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="price-display">
+                                                            {freq.value === 'none' ? '$0' : formatCurrency(monthlyPrice)}/mo
+                                                        </div>
+                                                        {freq.value !== 'none' && (
+                                                            <div className="text-sm text-gray-500">
+                                                                {freq.label} delivery
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                     
-                                    {activePopup === 'cinematic' && (
-                                        <div className="info-popup mb-4 relative">
-                                            <h4 className="font-semibold mb-2">Premium Cinematic Details</h4>
-                                            <p className="mb-2">{SERVICES.cinematicVideo.details.description}</p>
-                                            <div className="mb-2">
-                                                <strong>AI-Enhanced 4K:</strong> {SERVICES.cinematicVideo.details.technicalSpecs.aiEnhanced}
-                                            </div>
-                                            <div className="mb-2">
-                                                <strong>Native 4K:</strong> {SERVICES.cinematicVideo.details.technicalSpecs.native4k}
-                                            </div>
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <ClockIcon />
-                                                <span className="ml-1">Timeline: {SERVICES.cinematicVideo.details.timeline.aiEnhanced} (Native 4K: {SERVICES.cinematicVideo.details.timeline.native4k})</span>
+                                    {contract.cinematicFrequency !== 'none' && (
+                                        <div>
+                                            <h4 className="font-medium text-gray-900 mb-4">Quality</h4>
+                                            <div className="space-y-2">
+                                                <div 
+                                                    className={`frequency-option ${contract.cinematicQuality === 'ai-enhanced' ? 'selected' : ''}`}
+                                                    onClick={() => updateContract('cinematicQuality', 'ai-enhanced')}
+                                                >
+                                                    <div className="flex items-center">
+                                                        <input 
+                                                            type="radio" 
+                                                            checked={contract.cinematicQuality === 'ai-enhanced'}
+                                                            onChange={() => {}}
+                                                        />
+                                                        <div>
+                                                            <div className="font-medium">AI-Enhanced 4K</div>
+                                                            <div className="text-sm text-gray-500">Standard premium quality</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div 
+                                                    className={`frequency-option ${contract.cinematicQuality === 'native-4k' ? 'selected' : ''}`}
+                                                    onClick={() => updateContract('cinematicQuality', 'native-4k')}
+                                                >
+                                                    <div className="flex items-center">
+                                                        <input 
+                                                            type="radio" 
+                                                            checked={contract.cinematicQuality === 'native-4k'}
+                                                            onChange={() => {}}
+                                                        />
+                                                        <div>
+                                                            <div className="font-medium">Native 4K</div>
+                                                            <div className="text-sm text-gray-500">Premium rendering quality</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="price-display">+$1,500</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
-
-                                    <div className="service-row">
-                                        <div className="flex-1">
-                                            <div className="font-medium text-gray-900 mb-2">Frequency</div>
-                                            <select 
-                                                value={contract.cinematicFrequency}
-                                                onChange={(e) => updateContract('cinematicFrequency', e.target.value)}
-                                                className="dropdown"
-                                            >
-                                                {SERVICES.cinematicVideo.frequencies.map(freq => (
-                                                    <option key={freq.value} value={freq.value}>
-                                                        {freq.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        
-                                        {contract.cinematicFrequency !== 'none' && (
-                                            <div className="flex-1">
-                                                <div className="font-medium text-gray-900 mb-2">Quality</div>
-                                                <select 
-                                                    value={contract.cinematicQuality}
-                                                    onChange={(e) => updateContract('cinematicQuality', e.target.value)}
-                                                    className="dropdown"
-                                                >
-                                                    <option value="ai-enhanced">AI-Enhanced 4K</option>
-                                                    <option value="native-4k">Native 4K (+$1,500)</option>
-                                                </select>
-                                            </div>
-                                        )}
-                                    </div>
                                 </div>
 
                                 {/* Demo Videos */}
-                                <div className="contract-section">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-semibold text-gray-900">
-                                            🎯 Demo Videos (Minimum: 1/month)
-                                        </h3>
-                                        <button
-                                            onClick={() => setActivePopup(activePopup === 'demo' ? null : 'demo')}
-                                            className="text-nucor-green hover:text-nucor-darkgreen"
-                                        >
-                                            <InfoIcon />
-                                        </button>
+                                <div className="service-card">
+                                    <div className="service-header">
+                                        <div>
+                                            <h3 className="service-title">Demo Videos (Minimum: 1/month)</h3>
+                                            <p className="service-subtitle">90-second professional demonstration videos</p>
+                                        </div>
                                     </div>
 
-                                    {activePopup === 'demo' && (
-                                        <div className="info-popup mb-4 relative">
-                                            <h4 className="font-semibold mb-2">Demo Video Details</h4>
-                                            <p className="mb-2">{SERVICES.demoVideos.details.description}</p>
-                                            <div className="mb-2">
-                                                <strong>Technical Specs:</strong> {SERVICES.demoVideos.details.technicalSpecs}
-                                            </div>
-                                            <div className="flex items-center text-sm text-gray-600 mb-2">
-                                                <ClockIcon />
-                                                <span className="ml-1">Timeline: {SERVICES.demoVideos.details.timeline}</span>
-                                            </div>
-                                            <div>
-                                                <strong>Deliverables:</strong>
-                                                <ul className="list-disc list-inside text-sm mt-1">
-                                                    {SERVICES.demoVideos.details.deliverables.map((item, idx) => (
-                                                        <li key={idx}>{item}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="service-row">
-                                        <div className="flex-1">
-                                            <div className="font-medium text-gray-900 mb-2">Quantity per Month</div>
-                                            <div className="control-group">
-                                                <button 
-                                                    className="counter-btn"
-                                                    onClick={() => decrementValue('demoVideos', SERVICES.demoVideos.minimum)}
-                                                    disabled={contract.demoVideos <= SERVICES.demoVideos.minimum}
-                                                >
-                                                    <MinusIcon />
-                                                </button>
-                                                <input 
-                                                    type="number"
-                                                    value={contract.demoVideos}
-                                                    onChange={(e) => updateContract('demoVideos', Math.max(SERVICES.demoVideos.minimum, Math.min(SERVICES.demoVideos.maximum, parseInt(e.target.value) || SERVICES.demoVideos.minimum)))}
-                                                    className="number-input"
-                                                    min={SERVICES.demoVideos.minimum}
-                                                    max={SERVICES.demoVideos.maximum}
-                                                />
-                                                <button 
-                                                    className="counter-btn"
-                                                    onClick={() => incrementValue('demoVideos', SERVICES.demoVideos.maximum)}
-                                                    disabled={contract.demoVideos >= SERVICES.demoVideos.maximum}
-                                                >
-                                                    <PlusIcon />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="font-semibold text-nucor-green">
+                                    <div className="quantity-control">
+                                        <button 
+                                            className="quantity-btn"
+                                            onClick={() => decrementValue('demoVideos', SERVICES.demoVideos.minimum)}
+                                            disabled={contract.demoVideos <= SERVICES.demoVideos.minimum}
+                                        >
+                                            <MinusIcon />
+                                        </button>
+                                        <input 
+                                            type="number"
+                                            value={contract.demoVideos}
+                                            onChange={(e) => updateContract('demoVideos', Math.max(SERVICES.demoVideos.minimum, Math.min(SERVICES.demoVideos.maximum, parseInt(e.target.value) || SERVICES.demoVideos.minimum)))}
+                                            className="quantity-input"
+                                            min={SERVICES.demoVideos.minimum}
+                                            max={SERVICES.demoVideos.maximum}
+                                        />
+                                        <button 
+                                            className="quantity-btn"
+                                            onClick={() => incrementValue('demoVideos', SERVICES.demoVideos.maximum)}
+                                            disabled={contract.demoVideos >= SERVICES.demoVideos.maximum}
+                                        >
+                                            <PlusIcon />
+                                        </button>
+                                        <div className="ml-auto text-right">
+                                            <div className="price-display text-lg">
                                                 {formatCurrency(SERVICES.demoVideos.pricing.retainer * contract.demoVideos)}/month
                                             </div>
-                                            <div className="text-sm text-gray-500 line-through">
-                                                {formatCurrency(SERVICES.demoVideos.pricing.individual * contract.demoVideos)}
+                                            <div className="text-sm text-gray-500">
+                                                Save {formatCurrency((SERVICES.demoVideos.pricing.individual - SERVICES.demoVideos.pricing.retainer) * contract.demoVideos)}
                                             </div>
                                         </div>
                                     </div>
@@ -1150,7 +1291,7 @@
 
                             {/* Pricing Summary */}
                             <div className="lg:col-span-1">
-                                <div className="pricing-summary">
+                                <div className="pricing-sidebar">
                                     <h3 className="text-xl font-bold mb-4">Contract Summary</h3>
                                     
                                     <div className="mb-6">
