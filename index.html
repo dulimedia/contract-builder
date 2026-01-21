@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nucor 2026 - Contract Builder</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nucor-green': '#00A651',
+                        'nucor-darkgreen': '#007A3D',
+                        'nucor-gray': '#4A5568',
+                        'nucor-lightgray': '#E2E8F0'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .contract-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .service-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            background: #f9fafb;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .number-input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            text-align: center;
+        }
+        .dropdown {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            min-width: 120px;
+        }
+        .btn-primary {
+            background-color: #00A651;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #007A3D;
+        }
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #374151;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+        .info-popup {
+            position: absolute;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            z-index: 10;
+            max-width: 400px;
+            font-size: 0.875rem;
+        }
+        .pricing-summary {
+            position: sticky;
+            top: 2rem;
+            background: linear-gradient(135deg, #00A651, #007A3D);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .icon {
+            width: 1rem;
+            height: 1rem;
+            display: inline-block;
+        }
+        .icon-lg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        .counter-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+        }
+        .counter-btn:hover {
+            background: #f3f4f6;
+            border-color: #00A651;
+        }
+        .counter-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icons
+        const InfoIcon = () => (
+            <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const ClockIcon = () => (
+            <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const DownloadIcon = () => (
+            <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        );
+
+        const CheckIcon = () => (
+            <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+        );
+
+        const PlusIcon = () => (
+            <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+        );
+
+        const MinusIcon = () => (
+            <svg className="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+        );
+
+        // Service definitions
+        const SERVICES = {
+            cinematicVideo: {
+                id: 'cinematicVideo',
+                name: 'Premium Cinematic Videos',
+                description: '3-minute AI-Enhanced 4K cinematic showcases',
+                pricing: {
+                    base: 16500,          // Base price for AI-Enhanced 4K
+                    native4k: 18000,      // Price for Native 4K
+                    retainer: 13500       // Retainer price (AI-Enhanced)
+                },
+                frequencies: [
+                    { value: 'none', label: 'None', monthlyRate: 0 },
+                    { value: 'quarterly', label: 'Every 4 months', monthlyRate: 0.25 },
+                    { value: 'triannual', label: 'Every 3 months', monthlyRate: 0.33 },
+                    { value: 'bimonthly', label: 'Every 2 months', monthlyRate: 0.5 },
+                    { value: 'monthly', label: 'Monthly', monthlyRate: 1 }
+                ],
+                details: {
+                    description: 'Premium 3-minute cinematic showcases featuring advanced 3D modeling, photorealistic lighting, professional sound design, and AI-enhanced 4K resolution. Perfect for trade shows, marketing campaigns, and high-impact presentations.',
+                    technicalSpecs: {
+                        aiEnhanced: 'AI-Enhanced 4K (3840×2160 output), 60fps, Dolby Digital 5.1 surround sound, HDR color grading, professional motion graphics',
+                        native4k: 'Native 4K (3840×2160) rendering, 60fps, uncompressed output pipeline, professional color grading suite compatibility'
+                    },
+                    timeline: {
+                        aiEnhanced: '16-18 business days from CAD delivery to final output',
+                        native4k: '21-25 business days from CAD delivery to final output'
+                    },
+                    deliverables: ['Final 4K video file (MP4)', 'Web-optimized versions (1080p, 720p)', 'Social media cuts (16:9, 9:16, 1:1)', 'Raw project files', 'High-resolution thumbnails']
+                }
+            },
+            demoVideos: {
+                id: 'demoVideos',
+                name: 'Demo Videos',
+                description: '90-second professional demonstration videos',
+                pricing: {
+                    individual: 8000,
+                    retainer: 6000
+                },
+                minimum: 1,
+                maximum: 10,
+                details: {
+                    description: 'Professional demonstration videos showcasing product features, benefits, and applications. Optimized for training, sales presentations, and product launches.',
+                    technicalSpecs: 'Full HD 1080p (1920×1080), 30fps, stereo audio, professional voiceover, motion graphics overlays',
+                    timeline: '10-12 business days from concept approval',
+                    deliverables: ['Final 1080p video file', 'Web-optimized version', 'Audio stems', 'Closed captions (SRT)', 'Thumbnail images']
+                }
+            },
+            verticalVideos: {
+                id: 'verticalVideos',
+                name: 'Vertical Content',
+                description: '60-second mobile-optimized vertical videos',
+                pricing: {
+                    individual: 3500,
+                    retainer: 2500
+                },
+                minimum: 2,
+                maximum: 8,
+                details: {
+                    description: 'Mobile-optimized vertical videos designed for social media platforms, LinkedIn posts, and mobile-first viewing experiences.',
+                    technicalSpecs: 'Vertical HD 1080×1920, 30fps, optimized audio levels, social media-ready formats',
+                    timeline: '7-9 business days from concept approval',
+                    deliverables: ['Vertical 1080p video', 'Square format version', 'Story format (9:16)', 'Captions overlay', 'Social media thumbnails']
+                }
+            },
+            highResStills: {
+                id: 'highResStills',
+                name: 'High-Resolution Stills',
+                description: '8K ultra-high-resolution product renders',
+                pricing: {
+                    individual: 200,
+                    retainer: 133
+                },
+                minimum: 0,
+                maximum: 20,
+                details: {
+                    description: 'Ultra-high-resolution product renders perfect for print materials, large-format displays, and premium marketing collateral. Professional lighting and composition.',
+                    technicalSpecs: '8K resolution (7680×4320), PNG/TIFF formats, 16-bit color depth, print-ready quality at 300 DPI',
+                    timeline: '5-7 business days per batch',
+                    deliverables: ['8K master files', 'Print-ready versions (300 DPI)', 'Web-optimized versions', 'Multiple angles/compositions', 'Transparent background versions']
+                }
+            }
+        };
+
+        function ContractBuilder() {
+            const [contract, setContract] = useState({
+                cinematicFrequency: 'quarterly',
+                cinematicQuality: 'ai-enhanced',
+                demoVideos: 1,
+                verticalVideos: 2,
+                highResStills: 0
+            });
+            const [showInfo, setShowInfo] = useState({});
+            const [activePopup, setActivePopup] = useState(null);
+
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(amount);
+            };
+
+            const calculatePricing = () => {
+                let monthlyTotal = 0;
+                let individualTotal = 0;
+                let breakdown = [];
+
+                // Cinematic Videos
+                if (contract.cinematicFrequency !== 'none') {
+                    const cinematicService = SERVICES.cinematicVideo;
+                    const frequency = cinematicService.frequencies.find(f => f.value === contract.cinematicFrequency);
+                    const isNative4k = contract.cinematicQuality === 'native-4k';
+                    const monthlyRate = frequency.monthlyRate;
+                    
+                    const individualPrice = isNative4k ? cinematicService.pricing.native4k : cinematicService.pricing.base;
+                    const retainerPrice = isNative4k ? 
+                        cinematicService.pricing.retainer + 1500 : 
+                        cinematicService.pricing.retainer;
+                    
+                    const monthlyRetainerCost = retainerPrice * monthlyRate;
+                    const monthlyIndividualCost = individualPrice * monthlyRate;
+                    
+                    monthlyTotal += monthlyRetainerCost;
+                    individualTotal += monthlyIndividualCost;
+                    
+                    breakdown.push({
+                        service: `Premium Cinematic (${isNative4k ? 'Native 4K' : 'AI-Enhanced 4K'})`,
+                        frequency: frequency.label,
+                        monthlyRetainer: monthlyRetainerCost,
+                        monthlyIndividual: monthlyIndividualCost,
+                        savings: monthlyIndividualCost - monthlyRetainerCost
+                    });
+                }
+
+                // Demo Videos
+                if (contract.demoVideos > 0) {
+                    const demoService = SERVICES.demoVideos;
+                    const monthlyRetainer = demoService.pricing.retainer * contract.demoVideos;
+                    const monthlyIndividual = demoService.pricing.individual * contract.demoVideos;
+                    
+                    monthlyTotal += monthlyRetainer;
+                    individualTotal += monthlyIndividual;
+                    
+                    breakdown.push({
+                        service: `Demo Videos (${contract.demoVideos}×)`,
+                        frequency: 'Monthly',
+                        monthlyRetainer: monthlyRetainer,
+                        monthlyIndividual: monthlyIndividual,
+                        savings: monthlyIndividual - monthlyRetainer
+                    });
+                }
+
+                // Vertical Videos
+                if (contract.verticalVideos > 0) {
+                    const verticalService = SERVICES.verticalVideos;
+                    const monthlyRetainer = verticalService.pricing.retainer * contract.verticalVideos;
+                    const monthlyIndividual = verticalService.pricing.individual * contract.verticalVideos;
+                    
+                    monthlyTotal += monthlyRetainer;
+                    individualTotal += monthlyIndividual;
+                    
+                    breakdown.push({
+                        service: `Vertical Content (${contract.verticalVideos}×)`,
+                        frequency: 'Monthly',
+                        monthlyRetainer: monthlyRetainer,
+                        monthlyIndividual: monthlyIndividual,
+                        savings: monthlyIndividual - monthlyRetainer
+                    });
+                }
+
+                // High-Res Stills
+                if (contract.highResStills > 0) {
+                    const stillsService = SERVICES.highResStills;
+                    const monthlyRetainer = stillsService.pricing.retainer * contract.highResStills;
+                    const monthlyIndividual = stillsService.pricing.individual * contract.highResStills;
+                    
+                    monthlyTotal += monthlyRetainer;
+                    individualTotal += monthlyIndividual;
+                    
+                    breakdown.push({
+                        service: `High-Res Stills (${contract.highResStills}×)`,
+                        frequency: 'Monthly',
+                        monthlyRetainer: monthlyRetainer,
+                        monthlyIndividual: monthlyIndividual,
+                        savings: monthlyIndividual - monthlyRetainer
+                    });
+                }
+
+                // Always include CAD conversion
+                breakdown.push({
+                    service: 'CAD Conversion & Optimization',
+                    frequency: 'Unlimited',
+                    monthlyRetainer: 0,
+                    monthlyIndividual: 500,
+                    savings: 500
+                });
+                individualTotal += 500;
+
+                const totalSavings = individualTotal - monthlyTotal;
+                const savingsPercentage = individualTotal > 0 ? (totalSavings / individualTotal) * 100 : 0;
+
+                return {
+                    monthlyTotal,
+                    annualTotal: monthlyTotal * 12,
+                    individualTotal,
+                    totalSavings,
+                    savingsPercentage,
+                    breakdown
+                };
+            };
+
+            const updateContract = (field, value) => {
+                setContract(prev => ({ ...prev, [field]: value }));
+            };
+
+            const incrementValue = (field, max) => {
+                setContract(prev => ({
+                    ...prev,
+                    [field]: Math.min(prev[field] + 1, max)
+                }));
+            };
+
+            const decrementValue = (field, min) => {
+                setContract(prev => ({
+                    ...prev,
+                    [field]: Math.max(prev[field] - 1, min)
+                }));
+            };
+
+            const exportContract = () => {
+                const pricing = calculatePricing();
+                
+                const contractData = {
+                    contractDetails: {
+                        monthlyInvestment: formatCurrency(pricing.monthlyTotal),
+                        annualInvestment: formatCurrency(pricing.annualTotal),
+                        totalSavings: formatCurrency(pricing.totalSavings),
+                        savingsPercentage: pricing.savingsPercentage.toFixed(1) + '%'
+                    },
+                    services: pricing.breakdown.map(item => ({
+                        service: item.service,
+                        frequency: item.frequency,
+                        monthlyRate: formatCurrency(item.monthlyRetainer),
+                        individualRate: formatCurrency(item.monthlyIndividual),
+                        monthlySavings: formatCurrency(item.savings)
+                    })),
+                    serviceDetails: {
+                        cinematicVideo: contract.cinematicFrequency !== 'none' ? {
+                            frequency: contract.cinematicFrequency,
+                            quality: contract.cinematicQuality,
+                            details: SERVICES.cinematicVideo.details
+                        } : null,
+                        demoVideos: contract.demoVideos > 0 ? {
+                            quantity: contract.demoVideos,
+                            details: SERVICES.demoVideos.details
+                        } : null,
+                        verticalVideos: contract.verticalVideos > 0 ? {
+                            quantity: contract.verticalVideos,
+                            details: SERVICES.verticalVideos.details
+                        } : null,
+                        highResStills: contract.highResStills > 0 ? {
+                            quantity: contract.highResStills,
+                            details: SERVICES.highResStills.details
+                        } : null
+                    },
+                    terms: {
+                        paymentSchedule: 'Net 30 days',
+                        contractLength: '12 months minimum',
+                        cancellationPolicy: '60 days written notice',
+                        revisionPolicy: 'Up to 3 revisions per deliverable included',
+                        rushDelivery: 'Available for 50% surcharge',
+                        cadConversion: 'Unlimited CAD conversion included',
+                        qualityAssurance: '100% satisfaction guarantee',
+                        intellectualProperty: 'Client retains all rights to final deliverables'
+                    },
+                    contact: {
+                        name: 'Drew Rogers',
+                        company: 'DuliMedia LLC',
+                        email: 'DuliMediaLLC@gmail.com',
+                        phone: '(818) 632-4964'
+                    },
+                    generatedAt: new Date().toISOString(),
+                    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                };
+
+                const blob = new Blob([JSON.stringify(contractData, null, 2)], { 
+                    type: 'application/json' 
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `nucor-custom-contract-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+
+            const pricing = calculatePricing();
+
+            return (
+                <div className="min-h-screen py-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        
+                        {/* Header */}
+                        <div className="text-center mb-12">
+                            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                                Nucor 2026 Video Production
+                            </h1>
+                            <h2 className="text-2xl text-nucor-green mb-6">
+                                Custom Contract Builder
+                            </h2>
+                            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                                Build your perfect retainer package with complete flexibility. 
+                                Choose exactly what you need, when you need it.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Contract Builder */}
+                            <div className="lg:col-span-2 space-y-6">
+                                
+                                {/* Premium Cinematic Videos */}
+                                <div className="contract-section">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            🎬 Premium Cinematic Videos
+                                        </h3>
+                                        <button
+                                            onClick={() => setActivePopup(activePopup === 'cinematic' ? null : 'cinematic')}
+                                            className="text-nucor-green hover:text-nucor-darkgreen"
+                                        >
+                                            <InfoIcon />
+                                        </button>
+                                    </div>
+                                    
+                                    {activePopup === 'cinematic' && (
+                                        <div className="info-popup mb-4 relative">
+                                            <h4 className="font-semibold mb-2">Premium Cinematic Details</h4>
+                                            <p className="mb-2">{SERVICES.cinematicVideo.details.description}</p>
+                                            <div className="mb-2">
+                                                <strong>AI-Enhanced 4K:</strong> {SERVICES.cinematicVideo.details.technicalSpecs.aiEnhanced}
+                                            </div>
+                                            <div className="mb-2">
+                                                <strong>Native 4K:</strong> {SERVICES.cinematicVideo.details.technicalSpecs.native4k}
+                                            </div>
+                                            <div className="flex items-center text-sm text-gray-600">
+                                                <ClockIcon />
+                                                <span className="ml-1">Timeline: {SERVICES.cinematicVideo.details.timeline.aiEnhanced} (Native 4K: {SERVICES.cinematicVideo.details.timeline.native4k})</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="service-row">
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900 mb-2">Frequency</div>
+                                            <select 
+                                                value={contract.cinematicFrequency}
+                                                onChange={(e) => updateContract('cinematicFrequency', e.target.value)}
+                                                className="dropdown"
+                                            >
+                                                {SERVICES.cinematicVideo.frequencies.map(freq => (
+                                                    <option key={freq.value} value={freq.value}>
+                                                        {freq.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        
+                                        {contract.cinematicFrequency !== 'none' && (
+                                            <div className="flex-1">
+                                                <div className="font-medium text-gray-900 mb-2">Quality</div>
+                                                <select 
+                                                    value={contract.cinematicQuality}
+                                                    onChange={(e) => updateContract('cinematicQuality', e.target.value)}
+                                                    className="dropdown"
+                                                >
+                                                    <option value="ai-enhanced">AI-Enhanced 4K</option>
+                                                    <option value="native-4k">Native 4K (+$1,500)</option>
+                                                </select>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Demo Videos */}
+                                <div className="contract-section">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            🎯 Demo Videos (Minimum: 1/month)
+                                        </h3>
+                                        <button
+                                            onClick={() => setActivePopup(activePopup === 'demo' ? null : 'demo')}
+                                            className="text-nucor-green hover:text-nucor-darkgreen"
+                                        >
+                                            <InfoIcon />
+                                        </button>
+                                    </div>
+
+                                    {activePopup === 'demo' && (
+                                        <div className="info-popup mb-4 relative">
+                                            <h4 className="font-semibold mb-2">Demo Video Details</h4>
+                                            <p className="mb-2">{SERVICES.demoVideos.details.description}</p>
+                                            <div className="mb-2">
+                                                <strong>Technical Specs:</strong> {SERVICES.demoVideos.details.technicalSpecs}
+                                            </div>
+                                            <div className="flex items-center text-sm text-gray-600 mb-2">
+                                                <ClockIcon />
+                                                <span className="ml-1">Timeline: {SERVICES.demoVideos.details.timeline}</span>
+                                            </div>
+                                            <div>
+                                                <strong>Deliverables:</strong>
+                                                <ul className="list-disc list-inside text-sm mt-1">
+                                                    {SERVICES.demoVideos.details.deliverables.map((item, idx) => (
+                                                        <li key={idx}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="service-row">
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900 mb-2">Quantity per Month</div>
+                                            <div className="control-group">
+                                                <button 
+                                                    className="counter-btn"
+                                                    onClick={() => decrementValue('demoVideos', SERVICES.demoVideos.minimum)}
+                                                    disabled={contract.demoVideos <= SERVICES.demoVideos.minimum}
+                                                >
+                                                    <MinusIcon />
+                                                </button>
+                                                <input 
+                                                    type="number"
+                                                    value={contract.demoVideos}
+                                                    onChange={(e) => updateContract('demoVideos', Math.max(SERVICES.demoVideos.minimum, Math.min(SERVICES.demoVideos.maximum, parseInt(e.target.value) || SERVICES.demoVideos.minimum)))}
+                                                    className="number-input"
+                                                    min={SERVICES.demoVideos.minimum}
+                                                    max={SERVICES.demoVideos.maximum}
+                                                />
+                                                <button 
+                                                    className="counter-btn"
+                                                    onClick={() => incrementValue('demoVideos', SERVICES.demoVideos.maximum)}
+                                                    disabled={contract.demoVideos >= SERVICES.demoVideos.maximum}
+                                                >
+                                                    <PlusIcon />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-semibold text-nucor-green">
+                                                {formatCurrency(SERVICES.demoVideos.pricing.retainer * contract.demoVideos)}/month
+                                            </div>
+                                            <div className="text-sm text-gray-500 line-through">
+                                                {formatCurrency(SERVICES.demoVideos.pricing.individual * contract.demoVideos)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Vertical Videos */}
+                                <div className="contract-section">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            📱 Vertical Content (Minimum: 2/month)
+                                        </h3>
+                                        <button
+                                            onClick={() => setActivePopup(activePopup === 'vertical' ? null : 'vertical')}
+                                            className="text-nucor-green hover:text-nucor-darkgreen"
+                                        >
+                                            <InfoIcon />
+                                        </button>
+                                    </div>
+
+                                    {activePopup === 'vertical' && (
+                                        <div className="info-popup mb-4 relative">
+                                            <h4 className="font-semibold mb-2">Vertical Content Details</h4>
+                                            <p className="mb-2">{SERVICES.verticalVideos.details.description}</p>
+                                            <div className="mb-2">
+                                                <strong>Technical Specs:</strong> {SERVICES.verticalVideos.details.technicalSpecs}
+                                            </div>
+                                            <div className="flex items-center text-sm text-gray-600 mb-2">
+                                                <ClockIcon />
+                                                <span className="ml-1">Timeline: {SERVICES.verticalVideos.details.timeline}</span>
+                                            </div>
+                                            <div>
+                                                <strong>Deliverables:</strong>
+                                                <ul className="list-disc list-inside text-sm mt-1">
+                                                    {SERVICES.verticalVideos.details.deliverables.map((item, idx) => (
+                                                        <li key={idx}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="service-row">
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900 mb-2">Quantity per Month</div>
+                                            <div className="control-group">
+                                                <button 
+                                                    className="counter-btn"
+                                                    onClick={() => decrementValue('verticalVideos', SERVICES.verticalVideos.minimum)}
+                                                    disabled={contract.verticalVideos <= SERVICES.verticalVideos.minimum}
+                                                >
+                                                    <MinusIcon />
+                                                </button>
+                                                <input 
+                                                    type="number"
+                                                    value={contract.verticalVideos}
+                                                    onChange={(e) => updateContract('verticalVideos', Math.max(SERVICES.verticalVideos.minimum, Math.min(SERVICES.verticalVideos.maximum, parseInt(e.target.value) || SERVICES.verticalVideos.minimum)))}
+                                                    className="number-input"
+                                                    min={SERVICES.verticalVideos.minimum}
+                                                    max={SERVICES.verticalVideos.maximum}
+                                                />
+                                                <button 
+                                                    className="counter-btn"
+                                                    onClick={() => incrementValue('verticalVideos', SERVICES.verticalVideos.maximum)}
+                                                    disabled={contract.verticalVideos >= SERVICES.verticalVideos.maximum}
+                                                >
+                                                    <PlusIcon />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-semibold text-nucor-green">
+                                                {formatCurrency(SERVICES.verticalVideos.pricing.retainer * contract.verticalVideos)}/month
+                                            </div>
+                                            <div className="text-sm text-gray-500 line-through">
+                                                {formatCurrency(SERVICES.verticalVideos.pricing.individual * contract.verticalVideos)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* High-Res Stills */}
+                                <div className="contract-section">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            📸 High-Resolution Stills (Optional)
+                                        </h3>
+                                        <button
+                                            onClick={() => setActivePopup(activePopup === 'stills' ? null : 'stills')}
+                                            className="text-nucor-green hover:text-nucor-darkgreen"
+                                        >
+                                            <InfoIcon />
+                                        </button>
+                                    </div>
+
+                                    {activePopup === 'stills' && (
+                                        <div className="info-popup mb-4 relative">
+                                            <h4 className="font-semibold mb-2">High-Resolution Stills Details</h4>
+                                            <p className="mb-2">{SERVICES.highResStills.details.description}</p>
+                                            <div className="mb-2">
+                                                <strong>Technical Specs:</strong> {SERVICES.highResStills.details.technicalSpecs}
+                                            </div>
+                                            <div className="flex items-center text-sm text-gray-600 mb-2">
+                                                <ClockIcon />
+                                                <span className="ml-1">Timeline: {SERVICES.highResStills.details.timeline}</span>
+                                            </div>
+                                            <div>
+                                                <strong>Deliverables:</strong>
+                                                <ul className="list-disc list-inside text-sm mt-1">
+                                                    {SERVICES.highResStills.details.deliverables.map((item, idx) => (
+                                                        <li key={idx}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="service-row">
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900 mb-2">Quantity per Month</div>
+                                            <div className="control-group">
+                                                <button 
+                                                    className="counter-btn"
+                                                    onClick={() => decrementValue('highResStills', SERVICES.highResStills.minimum)}
+                                                    disabled={contract.highResStills <= SERVICES.highResStills.minimum}
+                                                >
+                                                    <MinusIcon />
+                                                </button>
+                                                <input 
+                                                    type="number"
+                                                    value={contract.highResStills}
+                                                    onChange={(e) => updateContract('highResStills', Math.max(SERVICES.highResStills.minimum, Math.min(SERVICES.highResStills.maximum, parseInt(e.target.value) || SERVICES.highResStills.minimum)))}
+                                                    className="number-input"
+                                                    min={SERVICES.highResStills.minimum}
+                                                    max={SERVICES.highResStills.maximum}
+                                                />
+                                                <button 
+                                                    className="counter-btn"
+                                                    onClick={() => incrementValue('highResStills', SERVICES.highResStills.maximum)}
+                                                    disabled={contract.highResStills >= SERVICES.highResStills.maximum}
+                                                >
+                                                    <PlusIcon />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-semibold text-nucor-green">
+                                                {formatCurrency(SERVICES.highResStills.pricing.retainer * contract.highResStills)}/month
+                                            </div>
+                                            <div className="text-sm text-gray-500 line-through">
+                                                {formatCurrency(SERVICES.highResStills.pricing.individual * contract.highResStills)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CAD Conversion (Always Included) */}
+                                <div className="contract-section">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-semibold text-gray-900">
+                                            🔧 CAD Conversion & Optimization
+                                        </h3>
+                                        <div className="flex items-center">
+                                            <span className="text-sm text-green-600 font-medium mr-2">Always Included</span>
+                                            <CheckIcon />
+                                        </div>
+                                    </div>
+
+                                    <div className="service-row">
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900 mb-2">Unlimited CAD Processing</div>
+                                            <div className="text-sm text-gray-600">
+                                                Supports STEP, IGES, SolidWorks, Inventor, Fusion 360, Rhino, and 50+ other formats
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-semibold text-green-600">
+                                                Included
+                                            </div>
+                                            <div className="text-sm text-gray-500">
+                                                Value: $500/month
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Pricing Summary */}
+                            <div className="lg:col-span-1">
+                                <div className="pricing-summary">
+                                    <h3 className="text-xl font-bold mb-4">Contract Summary</h3>
+                                    
+                                    <div className="mb-6">
+                                        <div className="text-3xl font-bold mb-2">
+                                            {formatCurrency(pricing.monthlyTotal)}
+                                            <span className="text-lg font-normal">/month</span>
+                                        </div>
+                                        <div className="text-sm opacity-90">
+                                            {formatCurrency(pricing.annualTotal)} annually
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-6 p-3 bg-white bg-opacity-20 rounded-lg">
+                                        <div className="text-sm font-medium mb-1">Total Monthly Savings</div>
+                                        <div className="text-xl font-bold">
+                                            {formatCurrency(pricing.totalSavings)} ({pricing.savingsPercentage.toFixed(1)}%)
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 mb-6">
+                                        {pricing.breakdown.map((item, idx) => (
+                                            <div key={idx} className="flex justify-between text-sm">
+                                                <div>
+                                                    <div className="font-medium">{item.service}</div>
+                                                    <div className="opacity-80">{item.frequency}</div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="font-medium">{formatCurrency(item.monthlyRetainer)}</div>
+                                                    <div className="opacity-80">Save {formatCurrency(item.savings)}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={exportContract}
+                                        className="w-full bg-white text-nucor-green font-bold py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+                                    >
+                                        <DownloadIcon />
+                                        <span className="ml-2">Export Contract</span>
+                                    </button>
+
+                                    <div className="mt-4 text-xs opacity-80">
+                                        Contract valid for 30 days • 12-month minimum commitment
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="text-center mt-12 text-gray-600">
+                            <p className="mb-2">
+                                <strong>Contact:</strong> Drew Rogers | DuliMediaLLC@gmail.com | (818) 632-4964
+                            </p>
+                            <p className="text-sm">
+                                All services include professional sound design, unlimited revisions (up to 3 per deliverable), 
+                                and 100% satisfaction guarantee.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ContractBuilder />, document.getElementById('root'));
+    </script>
+</body>
+</html>
