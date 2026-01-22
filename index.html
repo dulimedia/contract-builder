@@ -359,16 +359,23 @@
         };
 
         function ContractBuilder() {
-            const [contract, setContract] = useState({
-                cinematicFrequency: 'quarterly',
-                cinematicQuality: 'ai-enhanced',
-                demoVideos: 1,
-                verticalVideos: 2,
-                highResStills: 0,
-                cinematicModeling: false,  // Per-video modeling switches
-                demoModeling: false,
-                verticalModeling: false,
-                stillsModeling: false
+            const [contract, setContract] = useState(() => {
+                const defaultFreq = 'quarterly';
+                const defaultConstraints = {
+                    quarterly: { demo: { min: 1, max: 3 }, vertical: { min: 2, max: 4 } }
+                };
+                
+                return {
+                    cinematicFrequency: defaultFreq,
+                    cinematicQuality: 'ai-enhanced',
+                    demoVideos: defaultConstraints.quarterly.demo.min, // Start with minimum
+                    verticalVideos: defaultConstraints.quarterly.vertical.min, // Start with minimum
+                    highResStills: 0,
+                    cinematicModeling: false,  // Per-video modeling switches
+                    demoModeling: false,
+                    verticalModeling: false,
+                    stillsModeling: false
+                };
             });
             const [showInfo, setShowInfo] = useState({});
             const [activePopup, setActivePopup] = useState(null);
@@ -568,22 +575,28 @@
                 setContract(prev => {
                     const newContract = { ...prev, [field]: value };
                     
-                    // If updating cinematic frequency, adjust other values to fit constraints
+                    // If updating cinematic frequency, always reset values to fit new constraints
                     if (field === 'cinematicFrequency') {
                         const constraints = getConstraints(value);
                         
-                        // Adjust demo videos to fit constraints
-                        if (newContract.demoVideos > constraints.demo.max) {
-                            newContract.demoVideos = constraints.demo.max;
-                        } else if (newContract.demoVideos < constraints.demo.min) {
+                        // Always enforce minimum constraints first, then check maximum
+                        // Demo videos: reset to minimum if below, or max if above
+                        if (newContract.demoVideos < constraints.demo.min) {
                             newContract.demoVideos = constraints.demo.min;
+                        } else if (newContract.demoVideos > constraints.demo.max) {
+                            newContract.demoVideos = constraints.demo.max;
                         }
                         
-                        // Adjust vertical videos to fit constraints  
-                        if (newContract.verticalVideos > constraints.vertical.max) {
-                            newContract.verticalVideos = constraints.vertical.max;
-                        } else if (newContract.verticalVideos < constraints.vertical.min) {
+                        // Vertical videos: reset to minimum if below, or max if above  
+                        if (newContract.verticalVideos < constraints.vertical.min) {
                             newContract.verticalVideos = constraints.vertical.min;
+                        } else if (newContract.verticalVideos > constraints.vertical.max) {
+                            newContract.verticalVideos = constraints.vertical.max;
+                        }
+                        
+                        // For bi-monthly (exactly 1 demo), always set to 1
+                        if (value === 'bimonthly') {
+                            newContract.demoVideos = 1;
                         }
                     }
                     
