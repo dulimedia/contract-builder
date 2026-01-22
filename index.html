@@ -1267,6 +1267,47 @@
                                             </div>
                                         </div>
 
+                                        {/* Video Types Comparison */}
+                                        <div className="contract-section">
+                                            <h3 className="text-xl font-bold text-gray-900 mb-6">Video Production Types</h3>
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                                {/* Premium Cinematic Videos */}
+                                                <div className="border border-green-200 rounded-lg p-6 bg-green-50">
+                                                    <div className="flex items-center mb-4">
+                                                        <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">P</div>
+                                                        <h4 className="font-bold text-green-800">Premium Cinematic Videos</h4>
+                                                    </div>
+                                                    <div className="space-y-3 text-sm">
+                                                        <div><strong>Purpose:</strong> Trade shows, marketing campaigns, high-impact presentations</div>
+                                                        <div><strong>Visual Quality:</strong> Maximum cinematic appeal with dramatic shots and camera movements</div>
+                                                        <div><strong>Lighting:</strong> Professional studio lighting with HDR environment mapping and realistic reflections</div>
+                                                        <div><strong>Textures:</strong> High-quality realistic materials with advanced bump/normal maps and reflections</div>
+                                                        <div><strong>Shot Variety:</strong> Multiple cinematic angles, dynamic camera paths, artistic compositions</div>
+                                                        <div><strong>Planning:</strong> Extensive storyboard development and cinematic shot planning</div>
+                                                        <div><strong>Best For:</strong> Aesthetic showcase, brand presentation, trade show displays</div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Demo Videos */}
+                                                <div className="border border-blue-200 rounded-lg p-6 bg-blue-50">
+                                                    <div className="flex items-center mb-4">
+                                                        <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">D</div>
+                                                        <h4 className="font-bold text-blue-800">Demo Videos</h4>
+                                                    </div>
+                                                    <div className="space-y-3 text-sm">
+                                                        <div><strong>Purpose:</strong> Product demonstrations, training, sales presentations</div>
+                                                        <div><strong>Visual Quality:</strong> Clear HD quality focused on functionality and explanation</div>
+                                                        <div><strong>Lighting:</strong> Professional lighting optimized for clarity and product visibility</div>
+                                                        <div><strong>Textures:</strong> Clean, professional materials with standard quality mapping</div>
+                                                        <div><strong>Shot Variety:</strong> Focused shots emphasizing product features and benefits</div>
+                                                        <div><strong>Planning:</strong> Structured approach highlighting key product aspects</div>
+                                                        <div><strong>Best For:</strong> Product education, sales support, feature demonstrations</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {/* Technical Specifications */}
                                         <div className="contract-section">
                                             <h3 className="text-xl font-bold text-gray-900 mb-6">Technical Specifications & Deliverables</h3>
@@ -1425,6 +1466,12 @@
                                                 <div>
                                                     <div className="font-medium">{item.service}</div>
                                                     <div className="opacity-80">{item.frequency}</div>
+                                                    {item.service.includes('Premium Cinematic') && (
+                                                        <div className="text-xs opacity-70 mt-1">Cinematic shots, premium textures</div>
+                                                    )}
+                                                    {item.service.includes('Demo Videos') && (
+                                                        <div className="text-xs opacity-70 mt-1">Explanatory focus, clear HD quality</div>
+                                                    )}
                                                 </div>
                                                 <div className="text-right">
                                                     <div className="font-medium">{formatCurrency(item.monthlyRetainer)}</div>
