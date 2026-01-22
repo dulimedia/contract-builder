@@ -1120,171 +1120,12 @@
 
                                 {activeTab === 'summary' && (
                                     <div className="space-y-6">
-                                        {/* Production Phases Overview */}
-                                        <div className="contract-section">
-                                            <h3 className="text-2xl font-bold text-gray-900 mb-6">Production Process Overview</h3>
-                                            
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                                                <div className="bg-gray-50 p-4 rounded-lg">
-                                                    <div className="text-3xl font-bold text-nucor-green mb-2">6</div>
-                                                    <div className="font-medium text-gray-900">Production Phases</div>
-                                                    <div className="text-sm text-gray-600">Structured workflow process</div>
-                                                </div>
-                                                <div className="bg-gray-50 p-4 rounded-lg">
-                                                    <div className="text-3xl font-bold text-nucor-green mb-2">50</div>
-                                                    <div className="font-medium text-gray-900">Days Timeline</div>
-                                                    <div className="text-sm text-gray-600">For premium cinematics</div>
-                                                </div>
-                                                <div className="bg-gray-50 p-4 rounded-lg">
-                                                    <div className="text-3xl font-bold text-nucor-green mb-2">4K</div>
-                                                    <div className="font-medium text-gray-900">Ultra HD Quality</div>
-                                                    <div className="text-sm text-gray-600">AI-Enhanced or Native</div>
-                                                </div>
-                                            </div>
-
-                                            {/* Production Phases */}
-                                            <div className="space-y-4">
-                                                <h4 className="text-lg font-semibold text-gray-900 mb-4">Detailed Production Phases</h4>
-                                                
-                                                {/* Phase 1 */}
-                                                <div className="border border-gray-200 rounded-lg p-4">
-                                                    <div className="flex items-center mb-3">
-                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</div>
-                                                        <h5 className="font-semibold text-gray-900">Pre-Production & Planning</h5>
-                                                        <div className="ml-auto text-sm text-gray-600 flex items-center">
-                                                            <ClockIcon />
-                                                            <span className="ml-1">5-7 business days</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-11 space-y-2">
-                                                        <p className="text-gray-600 mb-2">Comprehensive project planning and asset preparation phase.</p>
-                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                                                            <li>CAD file analysis and conversion (50+ formats supported)</li>
-                                                            <li>Storyboard development and shot planning</li>
-                                                            <li>Asset optimization and scene preparation</li>
-                                                            <li>Client consultation and concept refinement</li>
-                                                            <li>Technical specifications confirmation</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-
-                                                {/* Phase 2 */}
-                                                <div className="border border-gray-200 rounded-lg p-4">
-                                                    <div className="flex items-center mb-3">
-                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</div>
-                                                        <h5 className="font-semibold text-gray-900">3D Modeling & Layout</h5>
-                                                        <div className="ml-auto text-sm text-gray-600 flex items-center">
-                                                            <ClockIcon />
-                                                            <span className="ml-1">8-10 business days</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-11 space-y-2">
-                                                        <p className="text-gray-600 mb-2">Advanced 3D modeling and scene construction phase.</p>
-                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                                                            <li>Precision 3D model refinement and detailing</li>
-                                                            <li>Scene composition and camera path planning</li>
-                                                            <li>Environmental setup and context creation</li>
-                                                            <li>Material assignment and texture mapping preparation</li>
-                                                            <li>Scale verification and dimensional accuracy checks</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-
-                                                {/* Phase 3 */}
-                                                <div className="border border-gray-200 rounded-lg p-4">
-                                                    <div className="flex items-center mb-3">
-                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</div>
-                                                        <h5 className="font-semibold text-gray-900">Rigging & Animation Setup</h5>
-                                                        <div className="ml-auto text-sm text-gray-600 flex items-center">
-                                                            <ClockIcon />
-                                                            <span className="ml-1">8-12 business days</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-11 space-y-2">
-                                                        <p className="text-gray-600 mb-2">Professional rigging and animation development phase.</p>
-                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                                                            <li>Advanced rigging systems for mechanical components</li>
-                                                            <li>Cinematic camera movement and transitions</li>
-                                                            <li>Product demonstration sequences</li>
-                                                            <li>Dynamic assembly/disassembly animations</li>
-                                                            <li>Smooth motion curves and timing refinement</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-
-                                                {/* Phase 4 */}
-                                                <div className="border border-gray-200 rounded-lg p-4">
-                                                    <div className="flex items-center mb-3">
-                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</div>
-                                                        <h5 className="font-semibold text-gray-900">Lighting & Visual Effects</h5>
-                                                        <div className="ml-auto text-sm text-gray-600 flex items-center">
-                                                            <ClockIcon />
-                                                            <span className="ml-1">10-14 business days</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-11 space-y-2">
-                                                        <p className="text-gray-600 mb-2">Photorealistic lighting and advanced visual effects phase.</p>
-                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                                                            <li>Professional studio lighting setups</li>
-                                                            <li>HDR environment mapping and reflections</li>
-                                                            <li>Advanced material shader development</li>
-                                                            <li>Particle systems and atmospheric effects</li>
-                                                            <li>Color grading and visual consistency</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-
-                                                {/* Phase 5 */}
-                                                <div className="border border-gray-200 rounded-lg p-4">
-                                                    <div className="flex items-center mb-3">
-                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">5</div>
-                                                        <h5 className="font-semibold text-gray-900">Sound Design & Scoring</h5>
-                                                        <div className="ml-auto text-sm text-gray-600 flex items-center">
-                                                            <ClockIcon />
-                                                            <span className="ml-1">5-8 business days</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-11 space-y-2">
-                                                        <p className="text-gray-600 mb-2">Professional audio production and sound design phase.</p>
-                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                                                            <li>Original musical score composition</li>
-                                                            <li>Industrial sound effects and ambient audio</li>
-                                                            <li>Professional voiceover integration (if required)</li>
-                                                            <li>Dolby Digital 5.1 surround sound mixing</li>
-                                                            <li>Audio synchronization and balance optimization</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-
-                                                {/* Phase 6 */}
-                                                <div className="border border-gray-200 rounded-lg p-4">
-                                                    <div className="flex items-center mb-3">
-                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">6</div>
-                                                        <h5 className="font-semibold text-gray-900">Final Edit & Delivery</h5>
-                                                        <div className="ml-auto text-sm text-gray-600 flex items-center">
-                                                            <ClockIcon />
-                                                            <span className="ml-1">5-7 business days</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-11 space-y-2">
-                                                        <p className="text-gray-600 mb-2">Final production and multi-format delivery phase.</p>
-                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-                                                            <li>4K rendering (AI-Enhanced or Native)</li>
-                                                            <li>Multi-format output optimization</li>
-                                                            <li>Quality control and final review</li>
-                                                            <li>Deliverable package preparation</li>
-                                                            <li>Client presentation and approval process</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         {/* Video Types Comparison */}
                                         <div className="contract-section">
                                             <h3 className="text-xl font-bold text-gray-900 mb-6">Video Production Types</h3>
                                             
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                                 {/* Premium Cinematic Videos */}
                                                 <div className="border border-green-200 rounded-lg p-6 bg-green-50">
                                                     <div className="flex items-center mb-4">
@@ -1310,12 +1151,165 @@
                                                     </div>
                                                     <div className="space-y-3 text-sm">
                                                         <div><strong>Purpose:</strong> Product demonstrations, training, sales presentations</div>
-                                                        <div><strong>Visual Quality:</strong> Clear HD quality focused on functionality and explanation</div>
+                                                        <div><strong>Visual Quality:</strong> Clear Full HD (1080p) quality focused on functionality and explanation</div>
                                                         <div><strong>Lighting:</strong> Professional lighting optimized for clarity and product visibility</div>
                                                         <div><strong>Textures:</strong> Clean, professional materials with standard quality mapping</div>
                                                         <div><strong>Shot Variety:</strong> Focused shots emphasizing product features and benefits</div>
                                                         <div><strong>Planning:</strong> Structured approach highlighting key product aspects</div>
                                                         <div><strong>Best For:</strong> Product education, sales support, feature demonstrations</div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Vertical Videos */}
+                                                <div className="border border-purple-200 rounded-lg p-6 bg-purple-50">
+                                                    <div className="flex items-center mb-4">
+                                                        <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">V</div>
+                                                        <h4 className="font-bold text-purple-800">Vertical Content</h4>
+                                                    </div>
+                                                    <div className="space-y-3 text-sm">
+                                                        <div><strong>Purpose:</strong> Social media content, mobile-first viewing, explainer videos</div>
+                                                        <div><strong>Visual Quality:</strong> Full HD (1080p) optimized for mobile and social platforms</div>
+                                                        <div><strong>Lighting:</strong> Clear, social media-optimized lighting for mobile viewing</div>
+                                                        <div><strong>Textures:</strong> Clean materials optimized for small screen viewing</div>
+                                                        <div><strong>Shot Variety:</strong> Mobile-friendly framing with emphasis on explanation</div>
+                                                        <div><strong>Audio Focus:</strong> Less emphasis on complex audio, optimized for mobile consumption</div>
+                                                        <div><strong>Best For:</strong> Social media posts, mobile explainers, platform-specific content</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Production Processes Overview */}
+                                        <div className="contract-section">
+                                            <h3 className="text-2xl font-bold text-gray-900 mb-6">Production Process Overview</h3>
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                                <div className="bg-gray-50 p-4 rounded-lg">
+                                                    <div className="text-3xl font-bold text-nucor-green mb-2">6</div>
+                                                    <div className="font-medium text-gray-900">Production Phases</div>
+                                                    <div className="text-sm text-gray-600">Structured workflow process</div>
+                                                </div>
+                                                <div className="bg-gray-50 p-4 rounded-lg">
+                                                    <div className="text-3xl font-bold text-nucor-green mb-2">4K</div>
+                                                    <div className="font-medium text-gray-900">Ultra HD Quality</div>
+                                                    <div className="text-sm text-gray-600">AI-Enhanced or Native</div>
+                                                </div>
+                                                <div className="bg-gray-50 p-4 rounded-lg">
+                                                    <div className="text-3xl font-bold text-nucor-green mb-2">HD</div>
+                                                    <div className="font-medium text-gray-900">Full HD Quality</div>
+                                                    <div className="text-sm text-gray-600">1920×1080 Resolution</div>
+                                                </div>
+                                            </div>
+
+                                            {/* Production Phases */}
+                                            <div className="space-y-4">
+                                                <h4 className="text-lg font-semibold text-gray-900 mb-4">Detailed Production Phases</h4>
+                                                
+                                                {/* Phase 1 */}
+                                                <div className="border border-gray-200 rounded-lg p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</div>
+                                                        <h5 className="font-semibold text-gray-900">Pre-Production & Planning</h5>
+                                                    </div>
+                                                    <div className="ml-11 space-y-2">
+                                                        <p className="text-gray-600 mb-2">Comprehensive project planning and asset preparation phase.</p>
+                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                                            <li>CAD file analysis and conversion (50+ formats supported)</li>
+                                                            <li>Storyboard development and shot planning</li>
+                                                            <li>Asset optimization and scene preparation</li>
+                                                            <li>Client consultation and concept refinement</li>
+                                                            <li>Technical specifications confirmation</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 2 */}
+                                                <div className="border border-gray-200 rounded-lg p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</div>
+                                                        <h5 className="font-semibold text-gray-900">3D Modeling & Layout</h5>
+                                                    </div>
+                                                    <div className="ml-11 space-y-2">
+                                                        <p className="text-gray-600 mb-2">Advanced 3D modeling and scene construction phase.</p>
+                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                                            <li>Precision 3D model refinement and detailing</li>
+                                                            <li>Scene composition and camera path planning</li>
+                                                            <li>Environmental setup and context creation</li>
+                                                            <li>Material assignment and texture mapping preparation</li>
+                                                            <li>Scale verification and dimensional accuracy checks</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 3 */}
+                                                <div className="border border-gray-200 rounded-lg p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</div>
+                                                        <h5 className="font-semibold text-gray-900">Rigging & Animation Setup</h5>
+                                                    </div>
+                                                    <div className="ml-11 space-y-2">
+                                                        <p className="text-gray-600 mb-2">Professional rigging and animation development phase.</p>
+                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                                            <li>Advanced rigging systems for mechanical components</li>
+                                                            <li>Cinematic camera movement and transitions</li>
+                                                            <li>Product demonstration sequences</li>
+                                                            <li>Dynamic assembly/disassembly animations</li>
+                                                            <li>Smooth motion curves and timing refinement</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 4 */}
+                                                <div className="border border-gray-200 rounded-lg p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</div>
+                                                        <h5 className="font-semibold text-gray-900">Lighting & Visual Effects</h5>
+                                                    </div>
+                                                    <div className="ml-11 space-y-2">
+                                                        <p className="text-gray-600 mb-2">Photorealistic lighting and advanced visual effects phase.</p>
+                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                                            <li>Professional studio lighting setups</li>
+                                                            <li>HDR environment mapping and reflections</li>
+                                                            <li>Advanced material shader development</li>
+                                                            <li>Particle systems and atmospheric effects</li>
+                                                            <li>Color grading and visual consistency</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 5 */}
+                                                <div className="border border-gray-200 rounded-lg p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">5</div>
+                                                        <h5 className="font-semibold text-gray-900">Sound Design & Scoring</h5>
+                                                    </div>
+                                                    <div className="ml-11 space-y-2">
+                                                        <p className="text-gray-600 mb-2">Professional audio production and sound design phase.</p>
+                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                                            <li>Original musical score composition</li>
+                                                            <li>Industrial sound effects and ambient audio</li>
+                                                            <li>Professional voiceover integration (if required)</li>
+                                                            <li>Dolby Digital 5.1 surround sound mixing</li>
+                                                            <li>Audio synchronization and balance optimization</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                {/* Phase 6 */}
+                                                <div className="border border-gray-200 rounded-lg p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className="bg-nucor-green text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">6</div>
+                                                        <h5 className="font-semibold text-gray-900">Final Edit & Delivery</h5>
+                                                    </div>
+                                                    <div className="ml-11 space-y-2">
+                                                        <p className="text-gray-600 mb-2">Final production and multi-format delivery phase.</p>
+                                                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                                            <li>4K rendering (AI-Enhanced or Native)</li>
+                                                            <li>Multi-format output optimization</li>
+                                                            <li>Quality control and final review</li>
+                                                            <li>Deliverable package preparation</li>
+                                                            <li>Client presentation and approval process</li>
+                                                        </ul>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1332,8 +1326,12 @@
                                                     <div className="bg-gray-50 p-4 rounded-lg">
                                                         <div className="space-y-3">
                                                             <div className="flex justify-between">
-                                                                <span className="text-gray-600">Resolution:</span>
-                                                                <span className="font-medium">4K (3840×2160) / HD (1920×1080)</span>
+                                                                <span className="text-gray-600">4K Resolution:</span>
+                                                                <span className="font-medium">3840×2160 (Premium Cinematic)</span>
+                                                            </div>
+                                                            <div className="flex justify-between">
+                                                                <span className="text-gray-600">Full HD Resolution:</span>
+                                                                <span className="font-medium">1920×1080 (Demo & Vertical)</span>
                                                             </div>
                                                             <div className="flex justify-between">
                                                                 <span className="text-gray-600">Frame Rate:</span>
