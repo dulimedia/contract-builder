@@ -532,22 +532,97 @@
                 };
             };
 
+            // Calculate dynamic constraints based on cinematic frequency
+            const getConstraints = (cinematicFreq) => {
+                switch (cinematicFreq) {
+                    case 'monthly':
+                        return {
+                            demo: { min: 0, max: 0, message: "No room for demo videos with monthly cinematics" },
+                            vertical: { min: 1, max: 4 }
+                        };
+                    case 'bimonthly':
+                        return {
+                            demo: { min: 0, max: 2 },
+                            vertical: { min: 1, max: 4 }
+                        };
+                    case 'triannual':
+                    case 'quarterly':
+                        return {
+                            demo: { min: 1, max: 3 },
+                            vertical: { min: 2, max: 4 }
+                        };
+                    case 'none':
+                    default:
+                        return {
+                            demo: { min: 2, max: 4 },
+                            vertical: { min: 2, max: 4 }
+                        };
+                }
+            };
+
             const updateContract = (field, value) => {
-                setContract(prev => ({ ...prev, [field]: value }));
+                setContract(prev => {
+                    const newContract = { ...prev, [field]: value };
+                    
+                    // If updating cinematic frequency, adjust other values to fit constraints
+                    if (field === 'cinematicFrequency') {
+                        const constraints = getConstraints(value);
+                        
+                        // Adjust demo videos to fit constraints
+                        if (newContract.demoVideos > constraints.demo.max) {
+                            newContract.demoVideos = constraints.demo.max;
+                        } else if (newContract.demoVideos < constraints.demo.min) {
+                            newContract.demoVideos = constraints.demo.min;
+                        }
+                        
+                        // Adjust vertical videos to fit constraints  
+                        if (newContract.verticalVideos > constraints.vertical.max) {
+                            newContract.verticalVideos = constraints.vertical.max;
+                        } else if (newContract.verticalVideos < constraints.vertical.min) {
+                            newContract.verticalVideos = constraints.vertical.min;
+                        }
+                    }
+                    
+                    return newContract;
+                });
             };
 
-            const incrementValue = (field, max) => {
-                setContract(prev => ({
-                    ...prev,
-                    [field]: Math.min(prev[field] + 1, max)
-                }));
+            const incrementValue = (field, staticMax) => {
+                setContract(prev => {
+                    const constraints = getConstraints(prev.cinematicFrequency);
+                    let max = staticMax;
+                    
+                    // Use dynamic constraints for demo and vertical videos
+                    if (field === 'demoVideos') {
+                        max = constraints.demo.max;
+                    } else if (field === 'verticalVideos') {
+                        max = constraints.vertical.max;
+                    }
+                    
+                    return {
+                        ...prev,
+                        [field]: Math.min(prev[field] + 1, max)
+                    };
+                });
             };
 
-            const decrementValue = (field, min) => {
-                setContract(prev => ({
-                    ...prev,
-                    [field]: Math.max(prev[field] - 1, min)
-                }));
+            const decrementValue = (field, staticMin) => {
+                setContract(prev => {
+                    const constraints = getConstraints(prev.cinematicFrequency);
+                    let min = staticMin;
+                    
+                    // Use dynamic constraints for demo and vertical videos
+                    if (field === 'demoVideos') {
+                        min = constraints.demo.min;
+                    } else if (field === 'verticalVideos') {
+                        min = constraints.vertical.min;
+                    }
+                    
+                    return {
+                        ...prev,
+                        [field]: Math.max(prev[field] - 1, min)
+                    };
+                });
             };
 
             const exportContract = () => {
@@ -620,6 +695,7 @@
             };
 
             const pricing = calculatePricing();
+            const constraints = getConstraints(contract.cinematicFrequency);
 
             return (
                 <div className="min-h-screen py-8">
@@ -792,68 +868,81 @@
                                 <div className="service-card">
                                     <div className="service-header">
                                         <div>
-                                            <h3 className="service-title">Demo Videos (Minimum: 1/month)</h3>
+                                            <h3 className="service-title">Demo Videos ({constraints.demo.min}-{constraints.demo.max}/month)</h3>
                                             <p className="service-subtitle">90-second professional demonstration videos</p>
                                         </div>
                                     </div>
 
-                                    <div className="quantity-control">
-                                        <button 
-                                            className="quantity-btn"
-                                            onClick={() => decrementValue('demoVideos', SERVICES.demoVideos.minimum)}
-                                            disabled={contract.demoVideos <= SERVICES.demoVideos.minimum}
-                                        >
-                                            <MinusIcon />
-                                        </button>
-                                        <input 
-                                            type="number"
-                                            value={contract.demoVideos}
-                                            onChange={(e) => updateContract('demoVideos', Math.max(SERVICES.demoVideos.minimum, Math.min(SERVICES.demoVideos.maximum, parseInt(e.target.value) || SERVICES.demoVideos.minimum)))}
-                                            className="quantity-input"
-                                            min={SERVICES.demoVideos.minimum}
-                                            max={SERVICES.demoVideos.maximum}
-                                        />
-                                        <button 
-                                            className="quantity-btn"
-                                            onClick={() => incrementValue('demoVideos', SERVICES.demoVideos.maximum)}
-                                            disabled={contract.demoVideos >= SERVICES.demoVideos.maximum}
-                                        >
-                                            <PlusIcon />
-                                        </button>
-                                        <div className="ml-auto text-right">
-                                            <div className="price-display text-lg">
-                                                {formatCurrency((SERVICES.demoVideos.pricing.retainer * (contract.demoModeling ? 1.2 : 1)) * contract.demoVideos)}/month
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                Save {formatCurrency(((SERVICES.demoVideos.pricing.individual - SERVICES.demoVideos.pricing.retainer) * (contract.demoModeling ? 1.2 : 1)) * contract.demoVideos)}
+                                    {constraints.demo.max === 0 ? (
+                                        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                                            <div className="font-medium text-orange-800">Production Capacity Limit</div>
+                                            <div className="text-sm text-orange-600 mt-1">
+                                                No room for demo videos with monthly cinematic production schedule
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {/* Modeling Toggle for Demo Videos */}
-                                    <div className="mt-4">
-                                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                                            <div>
-                                                <div className="font-medium text-gray-900">Include 3D Modeling</div>
-                                                <div className="text-sm text-gray-500">+20% for professional modeling services</div>
-                                            </div>
-                                            <label className="switch">
+                                    ) : (
+                                        <>
+                                            <div className="quantity-control">
+                                                <button 
+                                                    className="quantity-btn"
+                                                    onClick={() => decrementValue('demoVideos', constraints.demo.min)}
+                                                    disabled={contract.demoVideos <= constraints.demo.min}
+                                                    title={contract.demoVideos <= constraints.demo.min ? `${constraints.demo.min} minimum` : ''}
+                                                >
+                                                    <MinusIcon />
+                                                </button>
                                                 <input 
-                                                    type="checkbox" 
-                                                    checked={contract.demoModeling}
-                                                    onChange={(e) => updateContract('demoModeling', e.target.checked)}
+                                                    type="number"
+                                                    value={contract.demoVideos}
+                                                    onChange={(e) => updateContract('demoVideos', Math.max(constraints.demo.min, Math.min(constraints.demo.max, parseInt(e.target.value) || constraints.demo.min)))}
+                                                    className="quantity-input"
+                                                    min={constraints.demo.min}
+                                                    max={constraints.demo.max}
                                                 />
-                                                <span className="slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                                <button 
+                                                    className="quantity-btn"
+                                                    onClick={() => incrementValue('demoVideos', constraints.demo.max)}
+                                                    disabled={contract.demoVideos >= constraints.demo.max}
+                                                    title={contract.demoVideos >= constraints.demo.max ? `${constraints.demo.max} maximum` : ''}
+                                                >
+                                                    <PlusIcon />
+                                                </button>
+                                                <div className="ml-auto text-right">
+                                                    <div className="price-display text-lg">
+                                                        {formatCurrency((SERVICES.demoVideos.pricing.retainer * (contract.demoModeling ? 1.2 : 1)) * contract.demoVideos)}/month
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        Save {formatCurrency(((SERVICES.demoVideos.pricing.individual - SERVICES.demoVideos.pricing.retainer) * (contract.demoModeling ? 1.2 : 1)) * contract.demoVideos)}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Modeling Toggle for Demo Videos */}
+                                            <div className="mt-4">
+                                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                                                    <div>
+                                                        <div className="font-medium text-gray-900">Include 3D Modeling</div>
+                                                        <div className="text-sm text-gray-500">+20% for professional modeling services</div>
+                                                    </div>
+                                                    <label className="switch">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={contract.demoModeling}
+                                                            onChange={(e) => updateContract('demoModeling', e.target.checked)}
+                                                        />
+                                                        <span className="slider"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
 
                                 {/* Vertical Videos */}
                                 <div className="service-card">
                                     <div className="service-header">
                                         <div>
-                                            <h3 className="service-title">Vertical Content (Minimum: 2/month)</h3>
+                                            <h3 className="service-title">Vertical Content ({constraints.vertical.min}-{constraints.vertical.max}/month)</h3>
                                             <p className="service-subtitle">60-second mobile-optimized vertical videos</p>
                                         </div>
                                     </div>
@@ -861,23 +950,25 @@
                                     <div className="quantity-control">
                                         <button 
                                             className="quantity-btn"
-                                            onClick={() => decrementValue('verticalVideos', SERVICES.verticalVideos.minimum)}
-                                            disabled={contract.verticalVideos <= SERVICES.verticalVideos.minimum}
+                                            onClick={() => decrementValue('verticalVideos', constraints.vertical.min)}
+                                            disabled={contract.verticalVideos <= constraints.vertical.min}
+                                            title={contract.verticalVideos <= constraints.vertical.min ? `${constraints.vertical.min} minimum` : ''}
                                         >
                                             <MinusIcon />
                                         </button>
                                         <input 
                                             type="number"
                                             value={contract.verticalVideos}
-                                            onChange={(e) => updateContract('verticalVideos', Math.max(SERVICES.verticalVideos.minimum, Math.min(SERVICES.verticalVideos.maximum, parseInt(e.target.value) || SERVICES.verticalVideos.minimum)))}
+                                            onChange={(e) => updateContract('verticalVideos', Math.max(constraints.vertical.min, Math.min(constraints.vertical.max, parseInt(e.target.value) || constraints.vertical.min)))}
                                             className="quantity-input"
-                                            min={SERVICES.verticalVideos.minimum}
-                                            max={SERVICES.verticalVideos.maximum}
+                                            min={constraints.vertical.min}
+                                            max={constraints.vertical.max}
                                         />
                                         <button 
                                             className="quantity-btn"
-                                            onClick={() => incrementValue('verticalVideos', SERVICES.verticalVideos.maximum)}
-                                            disabled={contract.verticalVideos >= SERVICES.verticalVideos.maximum}
+                                            onClick={() => incrementValue('verticalVideos', constraints.vertical.max)}
+                                            disabled={contract.verticalVideos >= constraints.vertical.max}
+                                            title={contract.verticalVideos >= constraints.vertical.max ? `${constraints.vertical.max} maximum` : ''}
                                         >
                                             <PlusIcon />
                                         </button>
@@ -914,7 +1005,7 @@
                                 <div className="service-card">
                                     <div className="service-header">
                                         <div>
-                                            <h3 className="service-title">High-Resolution Stills (Optional)</h3>
+                                            <h3 className="service-title">High-Resolution Stills (0-20/month)</h3>
                                             <p className="service-subtitle">8K ultra-high-resolution product renders</p>
                                         </div>
                                     </div>
