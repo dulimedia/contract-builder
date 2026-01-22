@@ -365,7 +365,10 @@
                 demoVideos: 1,
                 verticalVideos: 2,
                 highResStills: 0,
-                includeModeling: false  // Default to false since client will send models
+                cinematicModeling: false,  // Per-video modeling switches
+                demoModeling: false,
+                verticalModeling: false,
+                stillsModeling: false
             });
             const [showInfo, setShowInfo] = useState({});
             const [activePopup, setActivePopup] = useState(null);
@@ -385,12 +388,6 @@
                 let individualTotal = 0;
                 let breakdown = [];
 
-                // Modeling Add-on (applies to all services that need modeling)
-                const modelingCost = contract.includeModeling ? {
-                    retainer: 2500,  // Additional monthly cost for modeling
-                    individual: 4000  // Additional individual cost for modeling
-                } : { retainer: 0, individual: 0 };
-
                 // Cinematic Videos
                 if (contract.cinematicFrequency !== 'none') {
                     const cinematicService = SERVICES.cinematicVideo;
@@ -403,17 +400,19 @@
                         cinematicService.pricing.retainer + 1500 : 
                         cinematicService.pricing.retainer;
 
-                    // Add modeling costs if enabled
-                    const individualPrice = baseIndividualPrice + (modelingCost.individual * monthlyRate);
-                    const retainerPrice = baseRetainerPrice + (modelingCost.retainer * monthlyRate);
+                    // Add 25% modeling cost if enabled for cinematics
+                    if (contract.cinematicModeling) {
+                        baseIndividualPrice *= 1.25;
+                        baseRetainerPrice *= 1.25;
+                    }
                     
-                    const monthlyRetainerCost = retainerPrice * monthlyRate;
-                    const monthlyIndividualCost = individualPrice * monthlyRate;
+                    const monthlyRetainerCost = baseRetainerPrice * monthlyRate;
+                    const monthlyIndividualCost = baseIndividualPrice * monthlyRate;
                     
                     monthlyTotal += monthlyRetainerCost;
                     individualTotal += monthlyIndividualCost;
                     
-                    const serviceName = contract.includeModeling 
+                    const serviceName = contract.cinematicModeling 
                         ? `Premium Cinematic with Modeling (${isNative4k ? 'Native 4K' : 'AI-Enhanced 4K'})`
                         : `Premium Cinematic (${isNative4k ? 'Native 4K' : 'AI-Enhanced 4K'})`;
 
@@ -429,14 +428,24 @@
                 // Demo Videos
                 if (contract.demoVideos > 0) {
                     const demoService = SERVICES.demoVideos;
-                    const monthlyRetainer = demoService.pricing.retainer * contract.demoVideos;
-                    const monthlyIndividual = demoService.pricing.individual * contract.demoVideos;
+                    let monthlyRetainer = demoService.pricing.retainer * contract.demoVideos;
+                    let monthlyIndividual = demoService.pricing.individual * contract.demoVideos;
+                    
+                    // Add 20% modeling cost if enabled for demos
+                    if (contract.demoModeling) {
+                        monthlyRetainer *= 1.2;
+                        monthlyIndividual *= 1.2;
+                    }
                     
                     monthlyTotal += monthlyRetainer;
                     individualTotal += monthlyIndividual;
                     
+                    const serviceName = contract.demoModeling 
+                        ? `Demo Videos with Modeling (${contract.demoVideos}×)`
+                        : `Demo Videos (${contract.demoVideos}×)`;
+                    
                     breakdown.push({
-                        service: `Demo Videos (${contract.demoVideos}×)`,
+                        service: serviceName,
                         frequency: 'Monthly',
                         monthlyRetainer: monthlyRetainer,
                         monthlyIndividual: monthlyIndividual,
@@ -447,14 +456,24 @@
                 // Vertical Videos
                 if (contract.verticalVideos > 0) {
                     const verticalService = SERVICES.verticalVideos;
-                    const monthlyRetainer = verticalService.pricing.retainer * contract.verticalVideos;
-                    const monthlyIndividual = verticalService.pricing.individual * contract.verticalVideos;
+                    let monthlyRetainer = verticalService.pricing.retainer * contract.verticalVideos;
+                    let monthlyIndividual = verticalService.pricing.individual * contract.verticalVideos;
+                    
+                    // Add 20% modeling cost if enabled for verticals
+                    if (contract.verticalModeling) {
+                        monthlyRetainer *= 1.2;
+                        monthlyIndividual *= 1.2;
+                    }
                     
                     monthlyTotal += monthlyRetainer;
                     individualTotal += monthlyIndividual;
                     
+                    const serviceName = contract.verticalModeling 
+                        ? `Vertical Content with Modeling (${contract.verticalVideos}×)`
+                        : `Vertical Content (${contract.verticalVideos}×)`;
+                    
                     breakdown.push({
-                        service: `Vertical Content (${contract.verticalVideos}×)`,
+                        service: serviceName,
                         frequency: 'Monthly',
                         monthlyRetainer: monthlyRetainer,
                         monthlyIndividual: monthlyIndividual,
@@ -465,14 +484,24 @@
                 // High-Res Stills
                 if (contract.highResStills > 0) {
                     const stillsService = SERVICES.highResStills;
-                    const monthlyRetainer = stillsService.pricing.retainer * contract.highResStills;
-                    const monthlyIndividual = stillsService.pricing.individual * contract.highResStills;
+                    let monthlyRetainer = stillsService.pricing.retainer * contract.highResStills;
+                    let monthlyIndividual = stillsService.pricing.individual * contract.highResStills;
+                    
+                    // Add 25% modeling cost if enabled for stills
+                    if (contract.stillsModeling) {
+                        monthlyRetainer *= 1.25;
+                        monthlyIndividual *= 1.25;
+                    }
                     
                     monthlyTotal += monthlyRetainer;
                     individualTotal += monthlyIndividual;
                     
+                    const serviceName = contract.stillsModeling 
+                        ? `High-Res Stills with Modeling (${contract.highResStills}×)`
+                        : `High-Res Stills (${contract.highResStills}×)`;
+                    
                     breakdown.push({
-                        service: `High-Res Stills (${contract.highResStills}×)`,
+                        service: serviceName,
                         frequency: 'Monthly',
                         monthlyRetainer: monthlyRetainer,
                         monthlyIndividual: monthlyIndividual,
@@ -639,33 +668,6 @@
                                 {activeTab === 'services' && (
                                     <div className="space-y-6">
                                 
-                                {/* Modeling Toggle */}
-                                <div className="service-card">
-                                    <div className="service-header">
-                                        <div>
-                                            <h3 className="service-title">3D Modeling Services</h3>
-                                            <p className="service-subtitle">Add professional 3D modeling to your package</p>
-                                        </div>
-                                        <label className="switch">
-                                            <input 
-                                                type="checkbox" 
-                                                checked={contract.includeModeling}
-                                                onChange={(e) => updateContract('includeModeling', e.target.checked)}
-                                            />
-                                            <span className="slider"></span>
-                                        </label>
-                                    </div>
-                                    {contract.includeModeling && (
-                                        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                            <p className="text-sm text-green-800">
-                                                <strong>Modeling services enabled:</strong> +$2,500/month retainer (+$4,000 individual pricing)
-                                            </p>
-                                            <p className="text-xs text-green-600 mt-1">
-                                                Includes precision 3D modeling, CAD optimization, and model refinement services.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
 
                                 {/* Premium Cinematic Videos */}
                                 <div className="service-card">
@@ -687,9 +689,9 @@
                                                 SERVICES.cinematicVideo.pricing.retainer + 1500 : 
                                                 SERVICES.cinematicVideo.pricing.retainer;
 
-                                            // Add modeling cost if enabled
-                                            if (contract.includeModeling) {
-                                                basePrice += 2500;
+                                            // Add 25% modeling cost if enabled for cinematics
+                                            if (contract.cinematicModeling) {
+                                                basePrice *= 1.25;
                                             }
 
                                             const monthlyPrice = basePrice * monthlyRate;
@@ -727,6 +729,26 @@
                                             );
                                         })}
                                     </div>
+
+                                    {/* Modeling Toggle for Cinematics */}
+                                    {contract.cinematicFrequency !== 'none' && (
+                                        <div className="mb-6">
+                                            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                                                <div>
+                                                    <div className="font-medium text-gray-900">Include 3D Modeling</div>
+                                                    <div className="text-sm text-gray-500">+25% for professional modeling services</div>
+                                                </div>
+                                                <label className="switch">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={contract.cinematicModeling}
+                                                        onChange={(e) => updateContract('cinematicModeling', e.target.checked)}
+                                                    />
+                                                    <span className="slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    )}
                                     
                                     {contract.cinematicFrequency !== 'none' && (
                                         <div>
@@ -806,178 +828,175 @@
                                         </button>
                                         <div className="ml-auto text-right">
                                             <div className="price-display text-lg">
-                                                {formatCurrency(SERVICES.demoVideos.pricing.retainer * contract.demoVideos)}/month
+                                                {formatCurrency((SERVICES.demoVideos.pricing.retainer * (contract.demoModeling ? 1.2 : 1)) * contract.demoVideos)}/month
                                             </div>
                                             <div className="text-sm text-gray-500">
-                                                Save {formatCurrency((SERVICES.demoVideos.pricing.individual - SERVICES.demoVideos.pricing.retainer) * contract.demoVideos)}
+                                                Save {formatCurrency(((SERVICES.demoVideos.pricing.individual - SERVICES.demoVideos.pricing.retainer) * (contract.demoModeling ? 1.2 : 1)) * contract.demoVideos)}
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Modeling Toggle for Demo Videos */}
+                                    <div className="mt-4">
+                                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                                            <div>
+                                                <div className="font-medium text-gray-900">Include 3D Modeling</div>
+                                                <div className="text-sm text-gray-500">+20% for professional modeling services</div>
+                                            </div>
+                                            <label className="switch">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={contract.demoModeling}
+                                                    onChange={(e) => updateContract('demoModeling', e.target.checked)}
+                                                />
+                                                <span className="slider"></span>
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Vertical Videos */}
-                                <div className="contract-section">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-semibold text-gray-900">
-                                            📱 Vertical Content (Minimum: 2/month)
-                                        </h3>
-                                        <button
-                                            onClick={() => setActivePopup(activePopup === 'vertical' ? null : 'vertical')}
-                                            className="text-nucor-green hover:text-nucor-darkgreen"
-                                        >
-                                            <InfoIcon />
-                                        </button>
+                                <div className="service-card">
+                                    <div className="service-header">
+                                        <div>
+                                            <h3 className="service-title">Vertical Content (Minimum: 2/month)</h3>
+                                            <p className="service-subtitle">60-second mobile-optimized vertical videos</p>
+                                        </div>
                                     </div>
 
-                                    {activePopup === 'vertical' && (
-                                        <div className="info-popup mb-4 relative">
-                                            <h4 className="font-semibold mb-2">Vertical Content Details</h4>
-                                            <p className="mb-2">{SERVICES.verticalVideos.details.description}</p>
-                                            <div className="mb-2">
-                                                <strong>Technical Specs:</strong> {SERVICES.verticalVideos.details.technicalSpecs}
+                                    <div className="quantity-control">
+                                        <button 
+                                            className="quantity-btn"
+                                            onClick={() => decrementValue('verticalVideos', SERVICES.verticalVideos.minimum)}
+                                            disabled={contract.verticalVideos <= SERVICES.verticalVideos.minimum}
+                                        >
+                                            <MinusIcon />
+                                        </button>
+                                        <input 
+                                            type="number"
+                                            value={contract.verticalVideos}
+                                            onChange={(e) => updateContract('verticalVideos', Math.max(SERVICES.verticalVideos.minimum, Math.min(SERVICES.verticalVideos.maximum, parseInt(e.target.value) || SERVICES.verticalVideos.minimum)))}
+                                            className="quantity-input"
+                                            min={SERVICES.verticalVideos.minimum}
+                                            max={SERVICES.verticalVideos.maximum}
+                                        />
+                                        <button 
+                                            className="quantity-btn"
+                                            onClick={() => incrementValue('verticalVideos', SERVICES.verticalVideos.maximum)}
+                                            disabled={contract.verticalVideos >= SERVICES.verticalVideos.maximum}
+                                        >
+                                            <PlusIcon />
+                                        </button>
+                                        <div className="ml-auto text-right">
+                                            <div className="price-display text-lg">
+                                                {formatCurrency((SERVICES.verticalVideos.pricing.retainer * (contract.verticalModeling ? 1.2 : 1)) * contract.verticalVideos)}/month
                                             </div>
-                                            <div className="flex items-center text-sm text-gray-600 mb-2">
-                                                <ClockIcon />
-                                                <span className="ml-1">Timeline: {SERVICES.verticalVideos.details.timeline}</span>
-                                            </div>
-                                            <div>
-                                                <strong>Deliverables:</strong>
-                                                <ul className="list-disc list-inside text-sm mt-1">
-                                                    {SERVICES.verticalVideos.details.deliverables.map((item, idx) => (
-                                                        <li key={idx}>{item}</li>
-                                                    ))}
-                                                </ul>
+                                            <div className="text-sm text-gray-500">
+                                                Save {formatCurrency(((SERVICES.verticalVideos.pricing.individual - SERVICES.verticalVideos.pricing.retainer) * (contract.verticalModeling ? 1.2 : 1)) * contract.verticalVideos)}
                                             </div>
                                         </div>
-                                    )}
+                                    </div>
 
-                                    <div className="service-row">
-                                        <div className="flex-1">
-                                            <div className="font-medium text-gray-900 mb-2">Quantity per Month</div>
-                                            <div className="control-group">
-                                                <button 
-                                                    className="counter-btn"
-                                                    onClick={() => decrementValue('verticalVideos', SERVICES.verticalVideos.minimum)}
-                                                    disabled={contract.verticalVideos <= SERVICES.verticalVideos.minimum}
-                                                >
-                                                    <MinusIcon />
-                                                </button>
+                                    {/* Modeling Toggle for Vertical Videos */}
+                                    <div className="mt-4">
+                                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                                            <div>
+                                                <div className="font-medium text-gray-900">Include 3D Modeling</div>
+                                                <div className="text-sm text-gray-500">+20% for professional modeling services</div>
+                                            </div>
+                                            <label className="switch">
                                                 <input 
-                                                    type="number"
-                                                    value={contract.verticalVideos}
-                                                    onChange={(e) => updateContract('verticalVideos', Math.max(SERVICES.verticalVideos.minimum, Math.min(SERVICES.verticalVideos.maximum, parseInt(e.target.value) || SERVICES.verticalVideos.minimum)))}
-                                                    className="number-input"
-                                                    min={SERVICES.verticalVideos.minimum}
-                                                    max={SERVICES.verticalVideos.maximum}
+                                                    type="checkbox" 
+                                                    checked={contract.verticalModeling}
+                                                    onChange={(e) => updateContract('verticalModeling', e.target.checked)}
                                                 />
-                                                <button 
-                                                    className="counter-btn"
-                                                    onClick={() => incrementValue('verticalVideos', SERVICES.verticalVideos.maximum)}
-                                                    disabled={contract.verticalVideos >= SERVICES.verticalVideos.maximum}
-                                                >
-                                                    <PlusIcon />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="font-semibold text-nucor-green">
-                                                {formatCurrency(SERVICES.verticalVideos.pricing.retainer * contract.verticalVideos)}/month
-                                            </div>
-                                            <div className="text-sm text-gray-500 line-through">
-                                                {formatCurrency(SERVICES.verticalVideos.pricing.individual * contract.verticalVideos)}
-                                            </div>
+                                                <span className="slider"></span>
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* High-Res Stills */}
-                                <div className="contract-section">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-semibold text-gray-900">
-                                            📸 High-Resolution Stills (Optional)
-                                        </h3>
-                                        <button
-                                            onClick={() => setActivePopup(activePopup === 'stills' ? null : 'stills')}
-                                            className="text-nucor-green hover:text-nucor-darkgreen"
-                                        >
-                                            <InfoIcon />
-                                        </button>
+                                <div className="service-card">
+                                    <div className="service-header">
+                                        <div>
+                                            <h3 className="service-title">High-Resolution Stills (Optional)</h3>
+                                            <p className="service-subtitle">8K ultra-high-resolution product renders</p>
+                                        </div>
                                     </div>
 
-                                    {activePopup === 'stills' && (
-                                        <div className="info-popup mb-4 relative">
-                                            <h4 className="font-semibold mb-2">High-Resolution Stills Details</h4>
-                                            <p className="mb-2">{SERVICES.highResStills.details.description}</p>
-                                            <div className="mb-2">
-                                                <strong>Technical Specs:</strong> {SERVICES.highResStills.details.technicalSpecs}
+                                    <div className="quantity-control">
+                                        <button 
+                                            className="quantity-btn"
+                                            onClick={() => decrementValue('highResStills', SERVICES.highResStills.minimum)}
+                                            disabled={contract.highResStills <= SERVICES.highResStills.minimum}
+                                        >
+                                            <MinusIcon />
+                                        </button>
+                                        <input 
+                                            type="number"
+                                            value={contract.highResStills}
+                                            onChange={(e) => updateContract('highResStills', Math.max(SERVICES.highResStills.minimum, Math.min(SERVICES.highResStills.maximum, parseInt(e.target.value) || SERVICES.highResStills.minimum)))}
+                                            className="quantity-input"
+                                            min={SERVICES.highResStills.minimum}
+                                            max={SERVICES.highResStills.maximum}
+                                        />
+                                        <button 
+                                            className="quantity-btn"
+                                            onClick={() => incrementValue('highResStills', SERVICES.highResStills.maximum)}
+                                            disabled={contract.highResStills >= SERVICES.highResStills.maximum}
+                                        >
+                                            <PlusIcon />
+                                        </button>
+                                        <div className="ml-auto text-right">
+                                            <div className="price-display text-lg">
+                                                {contract.highResStills === 0 ? '$0' : formatCurrency((SERVICES.highResStills.pricing.retainer * (contract.stillsModeling ? 1.25 : 1)) * contract.highResStills)}/month
                                             </div>
-                                            <div className="flex items-center text-sm text-gray-600 mb-2">
-                                                <ClockIcon />
-                                                <span className="ml-1">Timeline: {SERVICES.highResStills.details.timeline}</span>
-                                            </div>
-                                            <div>
-                                                <strong>Deliverables:</strong>
-                                                <ul className="list-disc list-inside text-sm mt-1">
-                                                    {SERVICES.highResStills.details.deliverables.map((item, idx) => (
-                                                        <li key={idx}>{item}</li>
-                                                    ))}
-                                                </ul>
+                                            {contract.highResStills > 0 && (
+                                                <div className="text-sm text-gray-500">
+                                                    Save {formatCurrency(((SERVICES.highResStills.pricing.individual - SERVICES.highResStills.pricing.retainer) * (contract.stillsModeling ? 1.25 : 1)) * contract.highResStills)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Modeling Toggle for Stills */}
+                                    {contract.highResStills > 0 && (
+                                        <div className="mt-4">
+                                            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                                                <div>
+                                                    <div className="font-medium text-gray-900">Include 3D Modeling</div>
+                                                    <div className="text-sm text-gray-500">+25% for professional modeling services</div>
+                                                </div>
+                                                <label className="switch">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={contract.stillsModeling}
+                                                        onChange={(e) => updateContract('stillsModeling', e.target.checked)}
+                                                    />
+                                                    <span className="slider"></span>
+                                                </label>
                                             </div>
                                         </div>
                                     )}
-
-                                    <div className="service-row">
-                                        <div className="flex-1">
-                                            <div className="font-medium text-gray-900 mb-2">Quantity per Month</div>
-                                            <div className="control-group">
-                                                <button 
-                                                    className="counter-btn"
-                                                    onClick={() => decrementValue('highResStills', SERVICES.highResStills.minimum)}
-                                                    disabled={contract.highResStills <= SERVICES.highResStills.minimum}
-                                                >
-                                                    <MinusIcon />
-                                                </button>
-                                                <input 
-                                                    type="number"
-                                                    value={contract.highResStills}
-                                                    onChange={(e) => updateContract('highResStills', Math.max(SERVICES.highResStills.minimum, Math.min(SERVICES.highResStills.maximum, parseInt(e.target.value) || SERVICES.highResStills.minimum)))}
-                                                    className="number-input"
-                                                    min={SERVICES.highResStills.minimum}
-                                                    max={SERVICES.highResStills.maximum}
-                                                />
-                                                <button 
-                                                    className="counter-btn"
-                                                    onClick={() => incrementValue('highResStills', SERVICES.highResStills.maximum)}
-                                                    disabled={contract.highResStills >= SERVICES.highResStills.maximum}
-                                                >
-                                                    <PlusIcon />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="font-semibold text-nucor-green">
-                                                {formatCurrency(SERVICES.highResStills.pricing.retainer * contract.highResStills)}/month
-                                            </div>
-                                            <div className="text-sm text-gray-500 line-through">
-                                                {formatCurrency(SERVICES.highResStills.pricing.individual * contract.highResStills)}
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 {/* CAD Conversion (Always Included) */}
-                                <div className="contract-section">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-semibold text-gray-900">
-                                            🔧 CAD Conversion & Optimization
-                                        </h3>
+                                <div className="service-card">
+                                    <div className="service-header">
+                                        <div>
+                                            <h3 className="service-title">CAD Conversion & Optimization</h3>
+                                            <p className="service-subtitle">Unlimited CAD processing and format conversion</p>
+                                        </div>
                                         <div className="flex items-center">
                                             <span className="text-sm text-green-600 font-medium mr-2">Always Included</span>
-                                            <CheckIcon />
+                                            <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                                                <CheckIcon />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="service-row">
+                                    <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
                                         <div className="flex-1">
                                             <div className="font-medium text-gray-900 mb-2">Unlimited CAD Processing</div>
                                             <div className="text-sm text-gray-600">
@@ -985,7 +1004,7 @@
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-semibold text-green-600">
+                                            <div className="font-semibold text-green-600 text-lg">
                                                 Included
                                             </div>
                                             <div className="text-sm text-gray-500">
