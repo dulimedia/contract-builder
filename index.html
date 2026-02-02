@@ -87,6 +87,11 @@
             border: 1px solid #e1e5e9;
         }
 
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+
         .quantity-btn {
             width: 32px;
             height: 32px;
@@ -328,7 +333,7 @@
                 description: '60-second mobile-optimized vertical videos',
                 pricing: {
                     individual: 3500,
-                    retainer: 2500
+                    retainer: 2000
                 },
                 minimum: 2,
                 maximum: 8,
@@ -644,71 +649,39 @@
 
             const exportContract = () => {
                 const pricing = calculatePricing();
-                
-                const contractData = {
-                    contractDetails: {
-                        monthlyInvestment: formatCurrency(pricing.monthlyTotal),
-                        annualInvestment: formatCurrency(pricing.annualTotal),
-                        totalSavings: formatCurrency(pricing.totalSavings),
-                        savingsPercentage: pricing.savingsPercentage.toFixed(1) + '%'
-                    },
-                    services: pricing.breakdown.map(item => ({
-                        service: item.service,
-                        frequency: item.frequency,
-                        monthlyRate: formatCurrency(item.monthlyRetainer),
-                        individualRate: formatCurrency(item.monthlyIndividual),
-                        monthlySavings: formatCurrency(item.savings)
-                    })),
-                    serviceDetails: {
-                        cinematicVideo: contract.cinematicFrequency !== 'none' ? {
-                            frequency: contract.cinematicFrequency,
-                            quality: contract.cinematicQuality,
-                            details: SERVICES.cinematicVideo.details
-                        } : null,
-                        demoVideos: contract.demoVideos > 0 ? {
-                            quantity: contract.demoVideos,
-                            details: SERVICES.demoVideos.details
-                        } : null,
-                        verticalVideos: contract.verticalVideos > 0 ? {
-                            quantity: contract.verticalVideos,
-                            details: SERVICES.verticalVideos.details
-                        } : null,
-                        highResStills: contract.highResStills > 0 ? {
-                            quantity: contract.highResStills,
-                            details: SERVICES.highResStills.details
-                        } : null
-                    },
-                    terms: {
-                        paymentSchedule: 'Net 30 days',
-                        contractLength: '12 months minimum',
-                        cancellationPolicy: '60 days written notice',
-                        revisionPolicy: 'Up to 3 revisions per deliverable included',
-                        rushDelivery: 'Available for 50% surcharge',
-                        cadConversion: 'Unlimited CAD conversion included',
-                        qualityAssurance: '100% satisfaction guarantee',
-                        intellectualProperty: 'Client retains all rights to final deliverables'
-                    },
-                    contact: {
-                        name: 'Drew Rogers',
-                        company: 'DuliMedia LLC',
-                        email: 'DuliMediaLLC@gmail.com',
-                        phone: '(818) 632-4964'
-                    },
-                    generatedAt: new Date().toISOString(),
-                    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-                };
 
-                const blob = new Blob([JSON.stringify(contractData, null, 2)], { 
-                    type: 'application/json' 
+                const lines = [];
+                lines.push('NUCOR 2026 - CONTRACT CONFIRMATION');
+                lines.push('==================================');
+                lines.push('');
+                lines.push('MONTHLY INVESTMENT: ' + formatCurrency(pricing.monthlyTotal));
+                lines.push('ANNUAL INVESTMENT: ' + formatCurrency(pricing.annualTotal));
+                lines.push('TOTAL SAVINGS: ' + formatCurrency(pricing.totalSavings) + ' (' + pricing.savingsPercentage.toFixed(1) + '%)');
+                lines.push('');
+                lines.push('SELECTED SERVICES:');
+                lines.push('------------------');
+                pricing.breakdown.forEach(item => {
+                    lines.push('');
+                    lines.push(item.service);
+                    lines.push('  Frequency: ' + item.frequency);
+                    lines.push('  Monthly Rate: ' + formatCurrency(item.monthlyRetainer));
+                    lines.push('  Individual Rate: ' + formatCurrency(item.monthlyIndividual));
+                    lines.push('  Savings: ' + formatCurrency(item.savings));
                 });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `nucor-custom-contract-${Date.now()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                lines.push('');
+                lines.push('TERMS:');
+                lines.push('------');
+                lines.push('Payment: Net 30 days');
+                lines.push('Contract: 12 months minimum');
+                lines.push('Cancellation: 60 days written notice');
+                lines.push('Revisions: Up to 3 per deliverable included');
+                lines.push('CAD Conversion: Unlimited included');
+                lines.push('');
+                lines.push('Generated: ' + new Date().toLocaleDateString());
+
+                const subject = encodeURIComponent('Nucor 2026 Contract Confirmation - ' + formatCurrency(pricing.monthlyTotal) + '/month');
+                const body = encodeURIComponent(lines.join('\n'));
+                window.location.href = 'mailto:dulimediallc@gmail.com?subject=' + subject + '&body=' + body;
             };
 
             const pricing = calculatePricing();
@@ -1494,10 +1467,10 @@
 
                                     <button
                                         onClick={exportContract}
-                                        className="w-full bg-white text-nucor-green font-bold py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+                                        className="bg-white text-nucor-green font-bold py-2 px-6 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center mx-auto"
                                     >
-                                        <DownloadIcon />
-                                        <span className="ml-2">Export Contract</span>
+                                        <CheckIcon />
+                                        <span className="ml-2">Confirm Contract</span>
                                     </button>
 
                                     <div className="mt-4 text-xs opacity-80">
